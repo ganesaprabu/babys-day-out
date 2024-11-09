@@ -26,6 +26,21 @@
     </script>
 </head>
 <body>
+     <!-- Welcome Screen -->
+     <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-content">
+            <h1>Baby's Day Out Adventure</h1>
+            <div class="book-cover">
+                <img src="assets/images/mappy-book-cover.png" alt="Baby's Day Out Adventure Book">
+            </div>
+            <p class="welcome-text">
+                ✨ Meet Mappy! Our adventurous little friend has discovered a magical storybook 📖 where every page leads to an exciting destination! Join Mappy on this incredible journey around the world 🌎 ✨
+            </p>
+            <button id="startJourneyBtn" class="start-journey-btn">Start Journey</button>
+        </div>
+    </div>
+
+
     <!-- Loading Screen -->
     <div id="loadingScreen" class="loading-screen">
         <div class="loading-content">
@@ -71,7 +86,7 @@
     <!-- Core Configuration -->
     <script src="js/config/config.js"></script>
     <script src="js/config/maps-config.js"></script>
-
+    <script src="js/main.js"></script>
     <!-- Initialize after config is loaded -->
     <script>
         window.BABY_APP = {
