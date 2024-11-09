@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby's Day Out - A 3D Adventure</title>
+    
+    <!-- Favicon - using inline SVG data URL to prevent 404 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%234285f4'/><text x='16' y='22' font-family='Arial' font-size='20' fill='white' text-anchor='middle'>B</text></svg>">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/story-panels.css">
+
+    <script>
+        // Global error handler for Google Maps
+        function gm_authFailure() {
+            console.error('Google Maps authentication failed');
+            document.getElementById('loadingScreen').innerHTML = 
+                '<div class="loading-content">' +
+                '<h1>Error Loading Map</h1>' +
+                '<p>Please check your API key configuration.</p>' +
+                '</div>';
+        }
+    </script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <h1>Baby's Day Out</h1>
+            <div class="loading-spinner"></div>
+            <p>Loading your adventure...</p>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <!-- Update the map container section in index.html -->
+    <div id="appContainer" class="app-container hidden">
+        <!-- Story Panel -->
+        <div id="storyPanel" class="story-panel">
+            <div class="story-content">
+                <h2 id="storyTitle">Welcome to Baby's Day Out!</h2>
+                <p id="storyText">Join Mappy on an incredible journey around the world...</p>
+                <div class="story-controls">
+                    <button id="prevStory" class="story-btn">Previous</button>
+                    <button id="nextStory" class="story-btn">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Container with explicit dimensions -->
+        <div class="map-container">
+            <div id="map" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"></div>
+        </div>
+
+        <!-- Interactive Overlay -->
+        <div id="interactiveOverlay" class="interactive-overlay"></div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Core Configuration -->
+    <!-- Debug Helper -->
+    <script src="js/debug.js"></script>
+
+    <!-- Core Configuration -->
+    <script src="js/config/config.js"></script>
+    <script src="js/config/maps-config.js"></script>
+
+    <!-- Initialize after config is loaded -->
+    <script>
+        window.BABY_APP = {
+            features: {},
+            ui: {},
+            init: function() {
+                DEBUG.log('Application initialized');
+            }
+        };
+
+        // Add error handler for script loading issues
+        window.onerror = function(msg, url, line, col, error) {
+            DEBUG.error('Global error:', { msg, url, line, col, error });
+            return false;
+        };
+    </script>
+
+    <!-- Features -->
+    <script src="js/features/map-controller.js"></script>
+    <script src="js/features/story-controller.js"></script>
+    <script src="js/features/animation-handler.js"></script>
+    <script src="js/features/gamification.js"></script>
+    <script src="js/ui/story-panels.js"></script>
+    <script src="js/ui/interactive-elements.js"></script>
+    <script src="js/main.js"></script>
+
+
+</body>
+</html>

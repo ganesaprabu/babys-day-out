@@ -1,0 +1,52 @@
+/* story-panels.css */
+.story-panel {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 300px;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.story-content {
+    margin-bottom: 15px;
+}
+
+.story-content h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.story-content p {
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.story-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.story-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    background: #4285f4;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.story-btn:hover {
+    background: #357abd;
+}
+
+.story-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
