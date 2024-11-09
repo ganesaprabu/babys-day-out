@@ -20,4 +20,29 @@ document.addEventListener('DOMContentLoaded', () => {
             window.BABY_APP.init();
         }, 500);
     });
+
+
+    // Add class to trigger animation when image is loaded
+    const bookImage = document.querySelector('.book-cover img');
+    if (bookImage) {
+        bookImage.onload = () => {
+            const bookCoverInner = document.querySelector('.book-cover-inner');
+            // Reset animation
+            bookCoverInner.style.animation = 'none';
+            bookCoverInner.offsetHeight; // Trigger reflow
+            bookCoverInner.style.animation = null;
+        };
+    }
+
+    // Add replay animation on click
+    const bookCover = document.querySelector('.book-cover');
+    if (bookCover) {
+        bookCover.addEventListener('click', () => {
+            const bookCoverInner = document.querySelector('.book-cover-inner');
+            // Reset animation
+            bookCoverInner.style.animation = 'none';
+            bookCoverInner.offsetHeight; // Trigger reflow
+            bookCoverInner.style.animation = 'bookOpen 2s ease-in-out';
+        });
+    }
 });
