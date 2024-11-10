@@ -1,0 +1,158 @@
+/* css/components/navigation-panel.css */
+.navigation-panel {
+    position: fixed;
+    right: -300px; /* Start off-screen */
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: right 0.5s ease-in-out;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.navigation-panel.active {
+    right: 0;
+}
+
+.destination-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.destination-item {
+    padding: 15px;
+    margin: 10px 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.destination-item:hover {
+    transform: translateX(-5px);
+    background: #f0f7ff;
+}
+
+.destination-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+.destination-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.panel-header {
+    padding: 10px 0;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 20px;
+}
+
+.panel-title {
+    font-size: 1.2em;
+    color: #1f2937;
+    margin: 0;
+}
+
+.intro-bubble {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    padding: 25px;
+    border-radius: 24px;
+    box-shadow: 
+        0 8px 32px rgba(66, 133, 244, 0.2),
+        0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    opacity: 0;
+    z-index: 1001;
+    border: 3px solid #4285f4;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.intro-bubble.active {
+    opacity: 1;
+}
+
+.intro-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 20px 20px 0;
+    border-style: solid;
+    border-color: #4285f4 transparent transparent;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.1));
+}
+
+.intro-bubble.active {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    animation: bubblePop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.mappy-message {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    text-align: center;
+}
+
+.mappy-icon {
+    font-size: 2rem;
+    display: block;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.mappy-signature {
+    display: block;
+    text-align: right;
+    margin-top: 10px;
+    font-style: italic;
+    color: #4285f4;
+    font-size: 0.9rem;
+}
+
+/* Add animations */
+@keyframes bubblePop {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.8);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
+
+@keyframes bubbleFloat {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    50% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+}
+
+.intro-bubble.active {
+    opacity: 1;
+    animation: 
+        bubblePop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+        bubbleFloat 3s ease-in-out infinite 0.5s;
+}

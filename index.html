@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/story-panels.css">
+    <link rel="stylesheet" href="css/components/navigation-panel.css">
 
     <style>
         /* Force hide story panel on initial load */
@@ -40,10 +41,7 @@
 </head>
 <body>
      <!-- Welcome Screen -->
-     <div id="welcomeScreen" class="welcome-screen">
-        <!-- Background Map Container -->
-        <div id="backgroundMap" class="background-map"></div>
-
+    <div id="welcomeScreen" class="welcome-screen">
         <div class="welcome-content">
             <h1>Baby's Day Out Adventure</h1>
             <div class="book-cover">
@@ -58,81 +56,45 @@
         </div>
     </div>
 
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="loading-screen">
-        <div class="loading-content">
-            <h1>Baby's Day Out</h1>
-            <div class="loading-spinner"></div>
-            <p>Loading your adventure...</p>
-        </div>
-    </div>
-
     <!-- Main Container -->
     <div id="appContainer" class="app-container hidden">
-        <!-- Story Panel -->
-        <div id="storyPanel" class="story-panel">
-            <div class="story-content">
-                <h2 id="storyTitle">Welcome to Baby's Day Out!</h2>
-                <p id="storyText">Join Mappy on an incredible journey around the world...</p>
-                <div class="story-controls">
-                    <button id="prevStory" class="story-btn">Previous</button>
-                    <button id="nextStory" class="story-btn">Next</button>
-                </div>
-            </div>
-        </div>
-    
-        <!-- Map Container with explicit dimensions -->
+        <!-- Map Container -->
         <div class="map-container">
-            <div id="map" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"></div>
-        </div>
-    
-        <!-- Interactive Overlay -->
-        <div id="interactiveOverlay" class="interactive-overlay"></div>
-    
-        <!-- Progress Bar -->
-        <div class="progress-container">
-            <div id="progressBar" class="progress-bar"></div>
+            <div id="map"></div>
         </div>
     </div>
 
     
-    <!-- Location: /babys-day-out/index.html -->
-    <!-- Replace the existing scripts section with this -->
-        <!-- Core Configuration -->
-        <script src="js/debug.js"></script>
-        <script src="js/config/config.js"></script>
+    <!-- In index.html, update the scripts section order -->
+    <!-- Core Configuration -->
+    <script src="js/debug.js"></script>
+    <script src="js/config/config.js"></script>
 
-        <!-- Initialize App Object -->
-        <script>
-            window.BABY_APP = {
-                features: {},
-                ui: {},
-                init: function() {
-                    DEBUG.log('Application initialized');
-                }
-            };
+    <!-- Initialize App Object -->
+    <script>
+        window.BABY_APP = {
+            features: {},
+            ui: {},
+            init: function() {
+                DEBUG.log('Application initialized');
+            }
+        };
+    </script>
 
-            // Add error handler for script loading issues
-            window.onerror = function(msg, url, line, col, error) {
-                DEBUG.error('Global error:', { msg, url, line, col, error });
-                return false;
-            };
-        </script>
+    <!-- UI Components -->
+    <script src="js/ui/story-panels.js"></script>
+    <script src="js/ui/interactive-elements.js"></script>
 
-        <!-- UI Components -->
-        <script src="js/ui/story-panels.js"></script>
-        <script src="js/ui/interactive-elements.js"></script>
+    <!-- Features -->
+    <script src="js/features/map-controller.js"></script>
+    <script src="js/features/story-controller.js"></script>
+    <script src="js/features/animation-handler.js"></script>
+    <script src="js/features/gamification.js"></script>
+    <script src="js/features/navigation-controller.js"></script>
 
-        <!-- Features -->
-        <script src="js/features/map-controller.js"></script>
-        <script src="js/features/story-controller.js"></script>
-        <script src="js/features/animation-handler.js"></script>
-        <script src="js/features/gamification.js"></script>
-
-        <!-- Configuration and Main -->
-        <script src="js/config/maps-config.js"></script>
-        <script src="js/main.js"></script>
-
+    <!-- Main and Configuration -->
+    <script src="js/main.js"></script>
+    <script src="js/config/maps-config.js"></script>
 
 
 </body>

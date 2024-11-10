@@ -118,8 +118,8 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+    background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
     z-index: 2000;
-    overflow: hidden; /* Prevent map overflow */
 }
 
 .background-map {

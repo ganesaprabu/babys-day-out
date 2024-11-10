@@ -15,7 +15,7 @@ const mapConfig = {
 };
 
 function initMap() {
-    console.log('initMap called');
+    console.log('Initializing map...');
     const mapElement = document.getElementById('map');
     
     try {
@@ -36,46 +36,52 @@ function initMap() {
             fullscreenControl: true
         });
 
-        // Hide loading screen immediately after map instance is created
-        hideLoadingScreen();
-
-        // Add a single event listener for map idle state
-        map.addListener('idle', () => {
-            console.log('Map is fully loaded and idle');
-            // Any additional initialization can go here
-        });
-
         window.BABY_APP.mapInstance = map;
+
+        // Initialize navigation after map is ready
+        google.maps.event.addListenerOnce(map, 'idle', () => {
+            console.log('Map is ready, initializing navigation...');
+            if (window.NavigationController) {
+                window.NavigationController.init();
+            }
+        });
 
     } catch (error) {
         console.error('Error creating map:', error);
-        showError('Failed to initialize map: ' + error.message);
     }
 }
 
 
+// In js/config/maps-config.js
+
+// js/config/maps-config.js
+
+// js/config/maps-config.js - Update the hideLoadingScreen function
+
 function hideLoadingScreen() {
     const loadingScreen = document.getElementById('loadingScreen');
     const appContainer = document.getElementById('appContainer');
+    const welcomeScreen = document.getElementById('welcomeScreen');
     
-    if (loadingScreen) {
+    if (loadingScreen && welcomeScreen.classList.contains('hidden')) {
+        console.log('Hiding loading screen');
         loadingScreen.style.opacity = '0';
         loadingScreen.style.transition = 'opacity 0.5s ease-out';
         
         setTimeout(() => {
             loadingScreen.style.display = 'none';
+            appContainer.classList.remove('hidden');
             
-            // Show the story panel after map loads
-            setTimeout(() => {
-                window.StoryPanel.show();
-            }, 500);
+            // Initialize navigation only after map is fully loaded and screens are transitioned
+            console.log('Initializing NavigationController');
+            if (window.NavigationController && window.NavigationController.init) {
+                window.NavigationController.init();
+            }
         }, 500);
     }
-    
-    if (appContainer) {
-        appContainer.classList.remove('hidden');
-    }
 }
+
+// ... rest of the code remains the same ...
 
 function showError(message) {
     const loadingScreen = document.getElementById('loadingScreen');
