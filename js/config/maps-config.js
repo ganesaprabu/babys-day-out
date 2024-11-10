@@ -53,18 +53,22 @@ function initMap() {
     }
 }
 
+
 function hideLoadingScreen() {
     const loadingScreen = document.getElementById('loadingScreen');
     const appContainer = document.getElementById('appContainer');
     
     if (loadingScreen) {
-        // Add fade-out animation
         loadingScreen.style.opacity = '0';
         loadingScreen.style.transition = 'opacity 0.5s ease-out';
         
-        // Remove loading screen after fade
         setTimeout(() => {
             loadingScreen.style.display = 'none';
+            
+            // Show the story panel after map loads
+            setTimeout(() => {
+                window.StoryPanel.show();
+            }, 500);
         }, 500);
     }
     

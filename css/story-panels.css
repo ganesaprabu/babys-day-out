@@ -9,6 +9,18 @@
     max-width: 300px;
     z-index: 1000;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: none !important; /* Force hide initially */
+}
+
+.app-container:not(.hidden) .story-panel.visible {
+    display: block !important;
+    opacity: 1;
+}
+
+.story-panel.visible {
+    opacity: 1;
+    display: block;
+    pointer-events: auto;
 }
 
 .story-content {

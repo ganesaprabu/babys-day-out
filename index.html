@@ -1,3 +1,4 @@
+<!-- Location: /babys-day-out/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +14,18 @@
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/story-panels.css">
 
+    <style>
+        /* Force hide story panel on initial load */
+        #storyPanel {
+            display: none !important;
+        }
+        
+        /* Hide welcome screen story panel specifically */
+        #welcomeScreen #storyPanel {
+            display: none !important;
+        }
+    </style>
+    
     <script>
         // Global error handler for Google Maps
         function gm_authFailure() {
@@ -28,7 +41,6 @@
 <body>
      <!-- Welcome Screen -->
      <div id="welcomeScreen" class="welcome-screen">
-
         <!-- Background Map Container -->
         <div id="backgroundMap" class="background-map"></div>
 
@@ -46,7 +58,6 @@
         </div>
     </div>
 
-
     <!-- Loading Screen -->
     <div id="loadingScreen" class="loading-screen">
         <div class="loading-content">
@@ -57,7 +68,6 @@
     </div>
 
     <!-- Main Container -->
-    <!-- Update the map container section in index.html -->
     <div id="appContainer" class="app-container hidden">
         <!-- Story Panel -->
         <div id="storyPanel" class="story-panel">
@@ -70,54 +80,59 @@
                 </div>
             </div>
         </div>
-
+    
         <!-- Map Container with explicit dimensions -->
         <div class="map-container">
             <div id="map" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"></div>
         </div>
-
+    
         <!-- Interactive Overlay -->
         <div id="interactiveOverlay" class="interactive-overlay"></div>
-
+    
         <!-- Progress Bar -->
         <div class="progress-container">
             <div id="progressBar" class="progress-bar"></div>
         </div>
     </div>
 
-    <!-- Core Configuration -->
-    <!-- Debug Helper -->
-    <script src="js/debug.js"></script>
+    
+    <!-- Location: /babys-day-out/index.html -->
+    <!-- Replace the existing scripts section with this -->
+        <!-- Core Configuration -->
+        <script src="js/debug.js"></script>
+        <script src="js/config/config.js"></script>
 
-    <!-- Core Configuration -->
-    <script src="js/config/config.js"></script>
-    <script src="js/config/maps-config.js"></script>
-    <script src="js/main.js"></script>
-    <!-- Initialize after config is loaded -->
-    <script>
-        window.BABY_APP = {
-            features: {},
-            ui: {},
-            init: function() {
-                DEBUG.log('Application initialized');
-            }
-        };
+        <!-- Initialize App Object -->
+        <script>
+            window.BABY_APP = {
+                features: {},
+                ui: {},
+                init: function() {
+                    DEBUG.log('Application initialized');
+                }
+            };
 
-        // Add error handler for script loading issues
-        window.onerror = function(msg, url, line, col, error) {
-            DEBUG.error('Global error:', { msg, url, line, col, error });
-            return false;
-        };
-    </script>
+            // Add error handler for script loading issues
+            window.onerror = function(msg, url, line, col, error) {
+                DEBUG.error('Global error:', { msg, url, line, col, error });
+                return false;
+            };
+        </script>
 
-    <!-- Features -->
-    <script src="js/features/map-controller.js"></script>
-    <script src="js/features/story-controller.js"></script>
-    <script src="js/features/animation-handler.js"></script>
-    <script src="js/features/gamification.js"></script>
-    <script src="js/ui/story-panels.js"></script>
-    <script src="js/ui/interactive-elements.js"></script>
-    <script src="js/main.js"></script>
+        <!-- UI Components -->
+        <script src="js/ui/story-panels.js"></script>
+        <script src="js/ui/interactive-elements.js"></script>
+
+        <!-- Features -->
+        <script src="js/features/map-controller.js"></script>
+        <script src="js/features/story-controller.js"></script>
+        <script src="js/features/animation-handler.js"></script>
+        <script src="js/features/gamification.js"></script>
+
+        <!-- Configuration and Main -->
+        <script src="js/config/maps-config.js"></script>
+        <script src="js/main.js"></script>
+
 
 
 </body>
