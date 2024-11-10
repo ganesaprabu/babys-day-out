@@ -1,7 +1,12 @@
 // js/features/navigation-controller.js
 const NavigationController = {
     destinations: [
-        { name: 'Golden Gate Bridge', icon: '🌉' },
+        { 
+            name: 'Golden Gate Bridge',
+            icon: '🌉',
+            location: LOCATIONS.GOLDEN_GATE_BRIDGE,
+            marketingContent: LOCATIONS.GOLDEN_GATE_BRIDGE.marketingContent
+        },
         { name: 'Exploratorium', icon: '🔬' },
         { name: "Fisherman's Wharf", icon: '🦀' },
         { name: 'Chinatown', icon: '🏮' },
@@ -127,15 +132,89 @@ const NavigationController = {
     },
 
     attachEventListeners: function() {
+        console.log('Attaching navigation event listeners');
         const items = document.querySelectorAll('.destination-item');
         items.forEach(item => {
             item.addEventListener('click', () => {
-                const destination = item.dataset.destination;
-                // We'll implement this in the next step
-                console.log(`Navigating to: ${destination}`);
+                const destinationName = item.dataset.destination;
+                console.log(`Clicked destination: ${destinationName}`);
+                
+                // Find the destination in our destinations array
+                const destination = this.destinations.find(d => d.name === destinationName);
+                
+                if (destination && destination.location) {
+                    console.log('Found destination data:', destination);
+                    
+                    // Highlight selected item
+                    items.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+    
+                    // Ensure MapController exists and is initialized
+                    if (!window.MapController || !window.MapController.moveToLocation) {
+                        console.error('MapController not properly initialized');
+                        return;
+                    }
+    
+                    // Move to the location
+                    console.log('Moving to location:', destination.location);
+                    window.MapController.moveToLocation({
+                        lat: destination.location.lat,
+                        lng: destination.location.lng,
+                        zoom: destination.location.zoom,
+                        tilt: destination.location.tilt,
+                        heading: destination.location.heading,
+                        name: destination.location.name
+                    });
+    
+                    // Show destination info
+                    this.showDestinationInfo(destination);
+                } else {
+                    console.warn('No location data found for:', destinationName);
+                }
             });
         });
-    }
+    },
+
+
+    showDestinationInfo: function(destination) {
+        // Remove any existing info panel
+        const existingPanel = document.querySelector('.destination-info-panel');
+        if (existingPanel) {
+            existingPanel.remove();
+        }
+    
+        const infoPanel = document.createElement('div');
+        infoPanel.className = 'destination-info-panel';
+        infoPanel.innerHTML = `
+            <div class="info-header">
+                <h3>${destination.marketingContent.title}</h3>
+                <span class="close-btn">×</span>
+            </div>
+            <div class="info-content">
+                <p class="subtitle">${destination.marketingContent.subtitle}</p>
+                <p class="description">${destination.marketingContent.description}</p>
+                <div class="features">
+                    ${destination.marketingContent.features.map(feature => 
+                        `<div class="feature-item">✓ ${feature}</div>`
+                    ).join('')}
+                </div>
+                <div class="promo-message">${destination.marketingContent.promoMessage}</div>
+                <button class="cta-button">${destination.marketingContent.callToAction}</button>
+            </div>
+        `;
+        
+        document.body.appendChild(infoPanel);
+        
+        // Add event listener for close button
+        const closeBtn = infoPanel.querySelector('.close-btn');
+        closeBtn.addEventListener('click', () => {
+            infoPanel.classList.add('closing');
+            setTimeout(() => infoPanel.remove(), 300);
+        });
+    
+        // Add animation class after a brief delay
+        setTimeout(() => infoPanel.classList.add('active'), 10);
+    },
 };
 
 // Initialize when DOM is loaded

@@ -1,5 +1,3 @@
-// js/main.js
-
 document.addEventListener('DOMContentLoaded', () => {
     const welcomeScreen = document.getElementById('welcomeScreen');
     const appContainer = document.getElementById('appContainer');
@@ -15,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
             welcomeScreen.classList.add('hidden');
             appContainer.classList.remove('hidden');
             
-            // Initialize map and navigation
-            initMap();
+            // Load Google Maps API after welcome screen transition
+            loadGoogleMapsAPI();
         }, 500);
     });
 

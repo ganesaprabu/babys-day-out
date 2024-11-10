@@ -1,19 +1,21 @@
 // maps-config.js
 console.log('Loading maps-config.js');
 
+// Map configuration object
 const mapConfig = {
     initialLocation: {
-        lat: CONFIG.LOCATIONS.SAN_FRANCISCO.lat,
-        lng: CONFIG.LOCATIONS.SAN_FRANCISCO.lng
+        lat: 37.7749,
+        lng: -122.4194
     },
-    zoom: CONFIG.LOCATIONS.SAN_FRANCISCO.zoom,
-    tilt: CONFIG.LOCATIONS.SAN_FRANCISCO.tilt,
-    heading: CONFIG.LOCATIONS.SAN_FRANCISCO.heading,
+    zoom: 18,
+    tilt: 45,
+    heading: 320,
     mapId: CONFIG.GOOGLE_MAPS.MAP_ID,
     webgl: true,
     gestureHandling: 'greedy'
 };
 
+// Map initialization function
 function initMap() {
     console.log('Initializing map...');
     const mapElement = document.getElementById('map');
@@ -38,6 +40,12 @@ function initMap() {
 
         window.BABY_APP.mapInstance = map;
 
+        // Initialize MapController with map instance
+        if (window.MapController) {
+            console.log('Initializing MapController...');
+            window.MapController.init(map);
+        }
+
         // Initialize navigation after map is ready
         google.maps.event.addListenerOnce(map, 'idle', () => {
             console.log('Map is ready, initializing navigation...');
@@ -51,39 +59,21 @@ function initMap() {
     }
 }
 
-
-// In js/config/maps-config.js
-
-// js/config/maps-config.js
-
-// js/config/maps-config.js - Update the hideLoadingScreen function
-
-function hideLoadingScreen() {
-    const loadingScreen = document.getElementById('loadingScreen');
-    const appContainer = document.getElementById('appContainer');
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    
-    if (loadingScreen && welcomeScreen.classList.contains('hidden')) {
-        console.log('Hiding loading screen');
-        loadingScreen.style.opacity = '0';
-        loadingScreen.style.transition = 'opacity 0.5s ease-out';
-        
-        setTimeout(() => {
-            loadingScreen.style.display = 'none';
-            appContainer.classList.remove('hidden');
-            
-            // Initialize navigation only after map is fully loaded and screens are transitioned
-            console.log('Initializing NavigationController');
-            if (window.NavigationController && window.NavigationController.init) {
-                window.NavigationController.init();
-            }
-        }, 500);
-    }
+function loadGoogleMapsAPI() {
+    console.log('Loading Google Maps API');
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS.API_KEY}&v=beta&libraries=maps&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    script.onerror = () => {
+        console.error('Failed to load Google Maps API');
+        showError('Failed to load Google Maps. Please check your internet connection and try again.');
+    };
+    document.head.appendChild(script);
 }
 
-// ... rest of the code remains the same ...
-
 function showError(message) {
+    console.error(message);
     const loadingScreen = document.getElementById('loadingScreen');
     if (loadingScreen) {
         loadingScreen.innerHTML = `
@@ -95,14 +85,6 @@ function showError(message) {
     }
 }
 
-// Load Google Maps API
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Loading Google Maps API');
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS.API_KEY}&v=beta&callback=initMap`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-});
-
+// Export functions
 window.initMap = initMap;
+window.loadGoogleMapsAPI = loadGoogleMapsAPI;
