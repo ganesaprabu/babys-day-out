@@ -20,7 +20,6 @@ async function initMap() {
     console.log('Initializing 3D map...');
     
     try {
-        // First import the required libraries
         const { Map3DElement } = await google.maps.importLibrary("maps3d");
         
         const map = new Map3DElement({
@@ -31,27 +30,43 @@ async function initMap() {
             },
             tilt: 67.5,
             heading: 80,
-            range: 1000 // Use range instead of zoom for 3D maps
-            // Removed mapId as it's not supported in Map3DElement
+            range: 1000
         });
 
         // Add the map to the container
         const mapContainer = document.getElementById('map');
-        mapContainer.innerHTML = ''; // Clear existing content
+        mapContainer.innerHTML = ''; 
         mapContainer.appendChild(map);
 
         window.BABY_APP.mapInstance = map;
 
-        // Initialize controllers after map is ready
-        map.addEventListener('gmp-ready', () => {
-            console.log('3D Map is ready, initializing navigation...');
+        // MODIFIED: Changed the event listener to handle the ready state better
+        const initControllers = () => {
+            console.log('3D Map is ready, initializing controllers...');
             if (window.NavigationController) {
+                console.log('Initializing NavigationController...');
                 window.NavigationController.init();
             }
-        });
+            if (window.MapController) {
+                console.log('Initializing MapController...');
+                window.MapController.init(map);
+            }
+        };
+
+        // Check if map is already ready
+        if (map.isReady) {
+            console.log('Map already ready, initializing immediately');
+            initControllers();
+        } else {
+            console.log('Waiting for map to be ready...');
+            map.addEventListener('gmp-ready', initControllers);
+        }
+
+        return map;
 
     } catch (error) {
         console.error('Error initializing 3D map:', error);
+        throw error;
     }
 }
 

@@ -39,6 +39,7 @@ const NavigationController = {
     },
 
     clearExistingElements: function() {
+        DEBUG.log('Clearing existing elements');
         // Remove any existing intro bubbles
         const existingBubbles = document.querySelectorAll('.intro-bubble');
         existingBubbles.forEach(bubble => bubble.remove());
@@ -95,6 +96,7 @@ const NavigationController = {
     },
 
     showNavigationPanel: function() {
+        DEBUG.log('Showing navigation panel');
         console.log('Creating navigation panel');
         
         // Remove any existing panel first
@@ -143,34 +145,21 @@ const NavigationController = {
                 const destinationName = item.dataset.destination;
                 console.log(`Clicked destination: ${destinationName}`);
                 
-                // Find the destination in our destinations array
                 const destination = this.destinations.find(d => d.name === destinationName);
-                
+    
                 if (destination && destination.location) {
-                    console.log('Found destination data:', destination);
-                    
-                    // Highlight selected item
                     items.forEach(i => i.classList.remove('active'));
                     item.classList.add('active');
     
-                    // Ensure MapController exists and is initialized
-                    if (!window.MapController || !window.MapController.moveToLocation) {
-                        console.error('MapController not properly initialized');
-                        return;
+                    // Load Google Maps API if not already loaded
+                    if (!window.BABY_APP.mapInstance) {
+                        loadGoogleMapsAPI().then(() => {
+                            window.MapController.moveToLocation(destination.location);
+                        });
+                    } else {
+                        window.MapController.moveToLocation(destination.location);
                     }
     
-                    // Move to the location
-                    console.log('Moving to location:', destination.location);
-                    window.MapController.moveToLocation({
-                        lat: destination.location.lat,
-                        lng: destination.location.lng,
-                        zoom: destination.location.zoom,
-                        tilt: destination.location.tilt,
-                        heading: destination.location.heading,
-                        name: destination.location.name
-                    });
-    
-                    // Show destination info
                     this.showDestinationInfo(destination);
                 } else {
                     console.warn('No location data found for:', destinationName);
