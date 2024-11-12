@@ -60,7 +60,14 @@
     <div id="appContainer" class="app-container hidden">
         <!-- Map Container -->
         <div class="map-container">
-            <div id="map"></div>
+            <gmp-map-3d id="map" heading="25" range="2500" tilt="65" 
+                        center="37.819852,-122.478549,165">
+                <gmp-polyline-3d 
+                    altitude-mode="relative-to-ground" 
+                    stroke-color="rgba(25, 102, 210, 0.75)" 
+                    stroke-width="10">
+                </gmp-polyline-3d>
+            </gmp-map-3d>
         </div>
     </div>
 

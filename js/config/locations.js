@@ -17,6 +17,7 @@ const LOCATIONS = {
     GOLDEN_GATE_BRIDGE: {
         lat: 37.819852,
         lng: -122.478549,
+        altitude: 0,
         name: 'Golden Gate Bridge',
         zoom: 17,
         tilt: 67.5,

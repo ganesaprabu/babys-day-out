@@ -1,7 +1,7 @@
 /* css/components/navigation-panel.css */
 .navigation-panel {
     position: fixed;
-    right: -300px; /* Start off-screen */
+    right: -300px;
     top: 0;
     width: 300px;
     height: 100%;
@@ -10,10 +10,16 @@
     transition: right 0.5s ease-in-out;
     z-index: 1000;
     padding: 20px;
+    overflow-y: auto;
 }
 
 .navigation-panel.active {
     right: 0;
+}
+
+/* Force panel to stay visible when active */
+.app-container:not(.hidden) .navigation-panel.active {
+    right: 0 !important;
 }
 
 .destination-list {

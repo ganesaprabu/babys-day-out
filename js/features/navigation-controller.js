@@ -18,32 +18,24 @@ const NavigationController = {
     init: function() {
         console.log('NavigationController init called');
         
-        // Only proceed if welcome screen is hidden
-        const welcomeScreen = document.getElementById('welcomeScreen');
-        
-        if (!welcomeScreen) {
-            console.error('Welcome screen element not found');
-            return;
-        }
-    
-        if (!welcomeScreen.classList.contains('hidden')) {
-            console.log('Still on welcome screen, skipping navigation init');
-            return;
-        }
-    
-        console.log('Conditions met, proceeding with navigation init');
-        
-        // Clear any existing elements first
+        // Remove the welcome screen check since we're on the second page
         this.clearExistingElements();
+        this.showNavigationPanel();
         
-        // Show intro bubble
-        this.showIntroBubble();
-        
-        // Set timeout for navigation panel
+        // Schedule intro bubble after a short delay
+        setTimeout(() => {
+            this.showIntroBubble();
+        }, 1000);
+
+        // Schedule hiding intro bubble and ensuring nav panel
         setTimeout(() => {
             this.hideIntroBubble();
-            this.showNavigationPanel();
-        }, 5000);
+            // Make sure navigation panel is visible
+            const navPanel = document.querySelector('.navigation-panel');
+            if (navPanel && !navPanel.classList.contains('active')) {
+                navPanel.classList.add('active');
+            }
+        }, 6000);
     },
 
     clearExistingElements: function() {
@@ -103,15 +95,27 @@ const NavigationController = {
     },
 
     showNavigationPanel: function() {
-        const welcomeScreen = document.getElementById('welcomeScreen');
-        if (!welcomeScreen.classList.contains('hidden')) return;
-        
         console.log('Creating navigation panel');
+        
+        // Remove any existing panel first
+        const existingPanel = document.querySelector('.navigation-panel');
+        if (existingPanel) {
+            existingPanel.remove();
+        }
+        
         const panel = document.createElement('div');
         panel.className = 'navigation-panel';
         panel.innerHTML = this.createPanelContent();
         document.body.appendChild(panel);
-        setTimeout(() => panel.classList.add('active'), 100);
+        
+        // Force a reflow
+        panel.offsetHeight;
+        
+        // Add active class after a brief delay
+        setTimeout(() => {
+            panel.classList.add('active');
+        }, 100);
+        
         this.attachEventListeners();
     },
 

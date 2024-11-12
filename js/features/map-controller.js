@@ -1,75 +1,53 @@
 // js/features/map-controller.js
 
 const MapController = {
-    // Current map instance
     map: null,
 
-    // Initialize with Google Maps instance
     init: function(mapInstance) {
         console.log('Initializing MapController...');
         this.map = mapInstance;
     },
 
-    // Smooth camera movement to location
     moveToLocation: function(location, duration = 2000) {
-        console.log('MapController.moveToLocation called with:', location);
+        console.log('Moving to location in 3D:', location);
     
         if (!this.map) {
-            console.error('Map not initialized in MapController');
+            console.error('Map not initialized');
             return;
         }
 
-        if (!location || typeof location.lat !== 'number' || typeof location.lng !== 'number') {
-            console.error('Invalid location data:', location);
-            return;
-        }
+        // Coordinates to outline the Golden Gate Bridge
+        const bridgeCoordinates = [
+            {lat: 37.80515638571346, lng: -122.4032569467164},
+            {lat: 37.80337073509504, lng: -122.4012878349353},
+            {lat: 37.79925208843463, lng: -122.3976697250461},
+            {lat: 37.7989102378512, lng: -122.3983408725656},
+            {lat: 37.79887832784348, lng: -122.3987094864192}
+        ];
 
-        console.log('Starting camera movement to:', location);
-
-        const startPos = this.map.getCenter();
-        const startZoom = this.map.getZoom();
-        const startTilt = this.map.getTilt();
-        const startHeading = this.map.getHeading();
-
-        // Create a smooth animation
-        const steps = Math.floor(duration / 16); // 60fps
-        let currentStep = 0;
-
-        const animate = () => {
-            currentStep++;
-            const progress = currentStep / steps;
-            
-            // Ease-in-out function for smooth acceleration and deceleration
-            const easeProgress = progress < 0.5
-                ? 2 * progress * progress
-                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-            // Interpolate all camera values
-            const currentLat = startPos.lat() + (location.lat - startPos.lat()) * easeProgress;
-            const currentLng = startPos.lng() + (location.lng - startPos.lng()) * easeProgress;
-            const currentZoom = startZoom + (location.zoom - startZoom) * easeProgress;
-            const currentTilt = startTilt + (location.tilt - startTilt) * easeProgress;
-            const currentHeading = startHeading + (location.heading - startHeading) * easeProgress;
-
-            // Update camera position
-            this.map.moveCamera({
-                center: { lat: currentLat, lng: currentLng },
-                zoom: currentZoom,
-                tilt: currentTilt,
-                heading: currentHeading
+        // Add path along bridge
+        const polyline = document.querySelector('gmp-polyline-3d');
+        if (polyline) {
+            customElements.whenDefined(polyline.localName).then(() => {
+                polyline.coordinates = bridgeCoordinates;
             });
+        }
 
-            // Continue animation if not complete
-            if (currentStep < steps) {
-                requestAnimationFrame(animate);
-            }
-        };
-
-        // Start animation
-        requestAnimationFrame(animate);
+        this.map.flyCameraTo({
+            endCamera: {
+                center: { 
+                    lat: location.lat, 
+                    lng: location.lng,
+                    altitude: 165 // Added altitude for better view
+                },
+                tilt: 65,
+                heading: 25,
+                range: 2500
+            },
+            durationMillis: duration
+        });
     },
 
-    // Method to smoothly transition between map styles
     setMapStyle: function(style) {
         if (!this.map) {
             console.error('Map not initialized');
@@ -79,5 +57,4 @@ const MapController = {
     }
 };
 
-// Make MapController globally accessible
 window.MapController = MapController;
