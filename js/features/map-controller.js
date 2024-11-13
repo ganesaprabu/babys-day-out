@@ -1,46 +1,77 @@
 // js/features/map-controller.js
-
 const MapController = {
     map: null,
+    initialized: false,
 
     init: async function(mapInstance) {
-        console.log('Initializing MapController with map instance:', mapInstance);
+        console.log('MapController.init called', {
+            hasExistingMap: !!this.map,
+            isInitialized: this.initialized,
+            receivedInstance: !!mapInstance
+        });
         
+        if (this.initialized) {
+            console.log('MapController already initialized, skipping');
+            return;
+        }
+
         if (!mapInstance) {
             console.error('No map instance provided to MapController.init');
             return;
         }
 
         this.map = mapInstance;
+        
+        try {
+            // Wait for map to be ready with timeout
+            if (!this.map.isReady) {
+                console.log('Waiting for map to be ready...');
+                await Promise.race([
+                    new Promise(resolve => {
+                        this.map.addEventListener('gmp-ready', () => {
+                            console.log('Map ready event received');
+                            resolve();
+                        });
+                    }),
+                    new Promise(resolve => {  // Changed from (_, reject) to (resolve)
+                        // Set a timeout of 5 seconds
+                        setTimeout(() => {
+                            console.log('Map ready timeout - proceeding anyway');
+                            resolve();  // Changed from standalone resolve() to resolve()
+                        }, 5000);
+                    })
+                ]);
+            }
 
-        // Wait for map to be ready
-        if (!this.map.isReady) {
-            await new Promise(resolve => {
-                this.map.addEventListener('gmp-ready', () => {
-                    console.log('Map is ready');
-                    resolve();
-                });
+            this.initialized = true;
+            console.log('MapController initialization complete', {
+                mapReady: this.map.isReady,
+                mapCenter: this.map.center,
+                initialized: this.initialized
             });
+            
+        } catch (error) {
+            console.error('Error in MapController initialization:', error);
+            this.initialized = false;
+            this.map = null;
+            throw error;
         }
-
-        console.log('MapController initialization complete');
     },
 
     moveToLocation: async function(location, duration = 2000) {
-        console.log('Moving to location in 3D:', location);
+        console.log('moveToLocation called', {
+            locationName: location.name || 'Unknown Location',
+            coordinates: `${location.lat},${location.lng}`,
+            initialized: this.initialized
+        });
     
-        if (!this.map) {
-            console.error('Map not initialized');
+        if (!this.map || !this.initialized) {
+            console.error('Map not properly initialized');
             return;
         }
 
         try {
-            // Ensure map is ready before moving
-            if (!this.map.isReady) {
-                await new Promise(resolve => {
-                    this.map.addEventListener('gmp-ready', resolve);
-                });
-            }
+            console.log('Starting camera movement');
 
             // Coordinates to outline the Golden Gate Bridge
             const bridgeCoordinates = [
@@ -51,20 +82,13 @@ const MapController = {
                 {lat: 37.79887832784348, lng: -122.3987094864192}
             ];
 
-            // Add path along bridge
-            const polyline = document.querySelector('gmp-polyline-3d');
-            if (polyline) {
-                await customElements.whenDefined(polyline.localName);
-                polyline.coordinates = bridgeCoordinates;
-            }
-
             // Move camera to location
             this.map.flyCameraTo({
                 endCamera: {
                     center: { 
                         lat: location.lat, 
                         lng: location.lng,
-                        altitude: location.altitude || 165 // Use provided altitude or default
+                        altitude: location.altitude || 165
                     },
                     tilt: location.tilt || 65,
                     heading: location.heading || 25,
@@ -73,21 +97,28 @@ const MapController = {
                 durationMillis: duration
             });
 
-            console.log('Camera movement initiated');
+            console.log('Camera movement started', {
+                duration,
+                target: `${location.lat},${location.lng}`
+            });
+
+            // Add path along bridge
+            const polyline = document.querySelector('gmp-polyline-3d');
+            if (polyline) {
+                await customElements.whenDefined(polyline.localName);
+                polyline.coordinates = bridgeCoordinates;
+                console.log('Polyline added to map');
+            }
+
+            // Listen for movement completion
+            this.map.addEventListener('gmp-animationend', () => {
+                console.log('Camera movement completed');
+            }, { once: true });
 
         } catch (error) {
             console.error('Error moving to location:', error);
         }
-    },
-
-    setMapStyle: function(style) {
-        if (!this.map) {
-            console.error('Map not initialized');
-            return;
-        }
-        this.map.setOptions({ styles: style });
     }
 };
 
-// Update the navigation controller to properly initialize the map
 window.MapController = MapController;

@@ -17,11 +17,27 @@ const mapConfig = {
 
 // Map initialization function
 async function initMap() {
-    console.log('Initializing 3D map...');
+    const initStartTime = new Date().toISOString();
+    console.log('Initializing 3D map...', initStartTime);
     
     try {
+        if (window.BABY_APP.mapInstance) {
+            console.log('Found existing map instance, skipping initialization');
+            return window.BABY_APP.mapInstance;
+        }
+
         const { Map3DElement } = await google.maps.importLibrary("maps3d");
+        console.log('Maps3d library loaded successfully');
         
+        const mapContainer = document.getElementById('map');
+        if (!mapContainer) {
+            throw new Error('Map container not found');
+        }
+
+        console.log('Current map container children:', mapContainer.children.length);
+        mapContainer.innerHTML = '';
+        
+        console.log('Creating new Map3DElement');
         const map = new Map3DElement({
             center: { 
                 lat: 37.819852, 
@@ -33,24 +49,28 @@ async function initMap() {
             range: 1000
         });
 
-        // Add the map to the container
-        const mapContainer = document.getElementById('map');
-        if (!mapContainer) {
-            throw new Error('Map container not found');
-        }
-
-        mapContainer.innerHTML = ''; 
         mapContainer.appendChild(map);
+        console.log('Map element added to container');
 
-        // Initialize MapController with the map instance
+        window.BABY_APP.mapInstance = map;
+        console.log('Map instance stored globally');
+
+        // Initialize controller
+        console.log('Starting MapController initialization');
         await MapController.init(map);
 
-        // Store map instance globally
-        window.BABY_APP.mapInstance = map;
+        const initEndTime = new Date().toISOString();
+        console.log('Full initialization sequence complete', {
+            startTime: initStartTime,
+            endTime: initEndTime,
+            mapInstance: !!window.BABY_APP.mapInstance,
+            controllerInitialized: MapController.initialized
+        });
 
         return map;
+
     } catch (error) {
-        console.error('Error initializing 3D map:', error);
+        console.error('Error in initMap:', error);
         throw error;
     }
 }

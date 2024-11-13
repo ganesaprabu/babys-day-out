@@ -60,17 +60,7 @@
     <div id="appContainer" class="app-container hidden">
         <!-- Map Container -->
         <div class="map-container">
-            <gmp-map-3d id="map" heading="25" range="2500" tilt="80" 
-                        center="37.819852,-122.478549,165"
-                        touch-interaction="true"
-                        keyboard-shortcuts="true"
-                        map-controls="true">
-                <gmp-polyline-3d 
-                    altitude-mode="relative-to-ground" 
-                    stroke-color="rgba(25, 102, 210, 0.75)" 
-                    stroke-width="10">
-                </gmp-polyline-3d>
-            </gmp-map-3d>
+            <div id="map"></div>  <!-- Just this empty container -->
         </div>
         <div class="navigation-panel">
             <!-- Content will be populated by NavigationController -->
