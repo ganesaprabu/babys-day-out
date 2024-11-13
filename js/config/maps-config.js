@@ -35,35 +35,20 @@ async function initMap() {
 
         // Add the map to the container
         const mapContainer = document.getElementById('map');
+        if (!mapContainer) {
+            throw new Error('Map container not found');
+        }
+
         mapContainer.innerHTML = ''; 
         mapContainer.appendChild(map);
 
+        // Initialize MapController with the map instance
+        await MapController.init(map);
+
+        // Store map instance globally
         window.BABY_APP.mapInstance = map;
 
-        // MODIFIED: Changed the event listener to handle the ready state better
-        const initControllers = () => {
-            console.log('3D Map is ready, initializing controllers...');
-            if (window.NavigationController) {
-                console.log('Initializing NavigationController...');
-                window.NavigationController.init();
-            }
-            if (window.MapController) {
-                console.log('Initializing MapController...');
-                window.MapController.init(map);
-            }
-        };
-
-        // Check if map is already ready
-        if (map.isReady) {
-            console.log('Map already ready, initializing immediately');
-            initControllers();
-        } else {
-            console.log('Waiting for map to be ready...');
-            map.addEventListener('gmp-ready', initControllers);
-        }
-
         return map;
-
     } catch (error) {
         console.error('Error initializing 3D map:', error);
         throw error;
@@ -73,14 +58,30 @@ async function initMap() {
 function loadGoogleMapsAPI() {
     console.log('Loading Google Maps API with 3D support');
     
-    // Use the new loading pattern for Google Maps
-    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-        key: CONFIG.GOOGLE_MAPS.API_KEY,
-        v: "alpha"
-    });
+    return new Promise((resolve, reject) => {
+        try {
+            (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+                key: CONFIG.GOOGLE_MAPS.API_KEY,
+                v: "alpha"
+            });
+            
+            // Wait for the API to load
+            const checkGoogleMaps = setInterval(() => {
+                if (window.google && window.google.maps) {
+                    clearInterval(checkGoogleMaps);
+                    resolve();
+                }
+            }, 100);
 
-    // Initialize map after API loads
-    initMap();
+            // Add timeout
+            setTimeout(() => {
+                clearInterval(checkGoogleMaps);
+                reject(new Error('Google Maps API load timeout'));
+            }, 10000);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 function showError(message) {

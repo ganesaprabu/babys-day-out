@@ -141,26 +141,36 @@ const NavigationController = {
         console.log('Attaching navigation event listeners');
         const items = document.querySelectorAll('.destination-item');
         items.forEach(item => {
-            item.addEventListener('click', () => {
+            item.addEventListener('click', async () => {
                 const destinationName = item.dataset.destination;
                 console.log(`Clicked destination: ${destinationName}`);
                 
                 const destination = this.destinations.find(d => d.name === destinationName);
     
                 if (destination && destination.location) {
-                    items.forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
+                    try {
+                        items.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
     
-                    // Load Google Maps API if not already loaded
-                    if (!window.BABY_APP.mapInstance) {
-                        loadGoogleMapsAPI().then(() => {
-                            window.MapController.moveToLocation(destination.location);
-                        });
-                    } else {
-                        window.MapController.moveToLocation(destination.location);
+                        // If map not initialized, initialize it
+                        if (!window.BABY_APP.mapInstance) {
+                            await loadGoogleMapsAPI();
+                            await initMap();
+                        }
+    
+                        // Ensure MapController is initialized
+                        if (!MapController.map) {
+                            await MapController.init(window.BABY_APP.mapInstance);
+                        }
+                        
+                        // Move to location
+                        await MapController.moveToLocation(destination.location);
+                        this.showDestinationInfo(destination);
+    
+                    } catch (error) {
+                        console.error('Error handling destination click:', error);
+                        alert('Sorry, we encountered an error loading the map. Please try again.');
                     }
-    
-                    this.showDestinationInfo(destination);
                 } else {
                     console.warn('No location data found for:', destinationName);
                 }
