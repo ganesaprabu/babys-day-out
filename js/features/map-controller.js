@@ -118,6 +118,68 @@ const MapController = {
         } catch (error) {
             console.error('Error moving to location:', error);
         }
+    },
+
+    
+    enhancedBridgeView: async function(initialLocation) {
+        if (!this.map || !this.initialized) {
+            console.error('Map not properly initialized');
+            return;
+        }
+    
+        try {
+            console.log('Starting enhanced bridge view sequence');
+    
+            // Step 1: Initial pause at the starting position
+            await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second pause
+    
+            // Step 2: Move under the bridge
+            console.log('Moving under the bridge');
+            this.map.flyCameraTo({
+                endCamera: {
+                    center: { 
+                        lat: 37.819852,
+                        lng: -122.478549,
+                        altitude: 50  // Lower altitude to go under the bridge
+                    },
+                    tilt: 85,  // Looking up at the bridge
+                    heading: 180,  // Facing south
+                    range: 500
+                },
+                durationMillis: 5000  // 5 seconds for this movement
+            });
+    
+            // Wait for the first animation to complete
+            await new Promise(resolve => {
+                this.map.addEventListener('gmp-animationend', resolve, { once: true });
+            });
+    
+            // Step 3: Move to the opposite side
+            console.log('Moving to opposite side');
+            this.map.flyCameraTo({
+                endCamera: {
+                    center: { 
+                        lat: 37.817852,  // Slightly south of the bridge
+                        lng: -122.478549,
+                        altitude: 200
+                    },
+                    tilt: 60,
+                    heading: 0,  // Facing north
+                    range: 1000
+                },
+                durationMillis: 5000
+            });
+    
+            // Wait for the second animation to complete
+            await new Promise(resolve => {
+                this.map.addEventListener('gmp-animationend', resolve, { once: true });
+            });
+    
+            console.log('Enhanced bridge view sequence completed');
+    
+        } catch (error) {
+            console.error('Error in enhanced bridge view:', error);
+        }
     }
 };
 

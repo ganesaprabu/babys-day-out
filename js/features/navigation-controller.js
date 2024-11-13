@@ -151,22 +151,28 @@ const NavigationController = {
                     try {
                         items.forEach(i => i.classList.remove('active'));
                         item.classList.add('active');
-    
+                
                         // If map not initialized, initialize it
                         if (!window.BABY_APP.mapInstance) {
                             await loadGoogleMapsAPI();
                             await initMap();
                         }
-    
+                
                         // Ensure MapController is initialized
                         if (!MapController.map) {
                             await MapController.init(window.BABY_APP.mapInstance);
                         }
                         
-                        // Move to location
+                        // Regular move to location first
                         await MapController.moveToLocation(destination.location);
+                        
+                        // For Golden Gate Bridge, add the enhanced view
+                        if (destination.name === 'Golden Gate Bridge') {
+                            await MapController.enhancedBridgeView(destination.location);
+                        }
+                        
                         this.showDestinationInfo(destination);
-    
+                
                     } catch (error) {
                         console.error('Error handling destination click:', error);
                         alert('Sorry, we encountered an error loading the map. Please try again.');
