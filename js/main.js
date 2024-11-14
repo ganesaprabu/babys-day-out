@@ -22,21 +22,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     await loadGoogleMapsAPI();
                     await initMap();
                 }
-    
+            
                 // Ensure MapController is initialized
                 if (!MapController.map) {
                     await MapController.init(window.BABY_APP.mapInstance);
                 }
-    
-                // Start the overview sequence
-                await MapController.startCityOverview();
-    
+            
+                // Start with globe view sequence
+                await MapController.startGlobeToSFSequence();
+            
                 // Show navigation panel after overview
                 const navigationPanel = document.querySelector('.navigation-panel');
                 if (navigationPanel) {
                     navigationPanel.classList.add('active');
                 }
-    
+            
                 // Initialize the NavigationController
                 if (window.NavigationController) {
                     window.NavigationController.init();

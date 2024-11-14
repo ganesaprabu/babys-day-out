@@ -282,6 +282,50 @@ const MapController = {
                 pulseRing.style.animationDelay = `${index * 0.3}s`;
             }
         });
+    },
+
+    startGlobeToSFSequence: async function() {
+        if (!this.map || !this.initialized) {
+            console.error('Map not properly initialized');
+            return;
+        }
+    
+        console.log('Starting globe to SF sequence');
+        
+        // Step 1: Global view
+        await this.map.flyCameraTo({
+            endCamera: {
+                center: { lat: 0, lng: 0, altitude: 15000000 },
+                tilt: 0,
+                heading: 0,
+                range: 15000000
+            },
+            durationMillis: 2000
+        });
+    
+        // Pause for user experience
+        await new Promise(resolve => setTimeout(resolve, 2000));
+    
+        // Step 2: Transition to San Francisco
+        await this.map.flyCameraTo({
+            endCamera: {
+                center: { lat: 37.7749, lng: -122.4194, altitude: 1000000 },
+                tilt: 45,
+                heading: 0,
+                range: 1000000
+            },
+            durationMillis: 3000
+        });
+    
+        // Wait for the animation to complete
+        await new Promise(resolve => {
+            this.map.addEventListener('gmp-animationend', resolve, { once: true });
+        });
+    
+        console.log('Globe to SF sequence completed');
+    
+        // Now start city overview sequence
+        await this.startCityOverview();
     }
 };
 
