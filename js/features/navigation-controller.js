@@ -7,7 +7,12 @@ const NavigationController = {
             location: LOCATIONS.GOLDEN_GATE_BRIDGE,
             marketingContent: LOCATIONS.GOLDEN_GATE_BRIDGE.marketingContent
         },
-        { name: 'Exploratorium', icon: '🔬' },
+        {
+            name: 'Exploratorium',
+            icon: '🔬',
+            location: LOCATIONS.EXPLORATORIUM,
+            marketingContent: LOCATIONS.EXPLORATORIUM.marketingContent
+        },
         { name: "Fisherman's Wharf", icon: '🦀' },
         { name: 'Chinatown', icon: '🏮' },
         { name: 'Golden Gate Park', icon: '🌳' }
@@ -137,6 +142,8 @@ const NavigationController = {
         `;
     },
 
+    // Update the attachEventListeners method in NavigationController
+
     attachEventListeners: function() {
         console.log('Attaching navigation event listeners');
         const items = document.querySelectorAll('.destination-item');
@@ -146,7 +153,7 @@ const NavigationController = {
                 console.log(`Clicked destination: ${destinationName}`);
                 
                 const destination = this.destinations.find(d => d.name === destinationName);
-    
+
                 if (destination && destination.location) {
                     try {
                         items.forEach(i => i.classList.remove('active'));
@@ -166,9 +173,11 @@ const NavigationController = {
                         // Regular move to location first
                         await MapController.moveToLocation(destination.location);
                         
-                        // For Golden Gate Bridge, add the enhanced view
+                        // Special sequences for specific locations
                         if (destination.name === 'Golden Gate Bridge') {
                             await MapController.enhancedBridgeView(destination.location);
+                        } else if (destination.name === 'Exploratorium') {
+                            await MapController.exploreExploratorium(destination.location);
                         }
                         
                         this.showDestinationInfo(destination);

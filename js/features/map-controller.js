@@ -326,6 +326,77 @@ const MapController = {
     
         // Now start city overview sequence
         await this.startCityOverview();
+    },
+
+    exploreExploratorium: async function(initialLocation) {
+        if (!this.map || !this.initialized) {
+            console.error('Map not properly initialized');
+            return;
+        }
+    
+        try {
+            console.log('Starting Exploratorium exploration sequence');
+    
+            // Step 1: Initial approach from the bay
+            await this.map.flyCameraTo({
+                endCamera: {
+                    center: { 
+                        lat: 37.8025,
+                        lng: -122.3980,
+                        altitude: 300
+                    },
+                    tilt: 60,
+                    heading: 120,
+                    range: 800
+                },
+                durationMillis: 3000
+            });
+    
+            // Wait for the first animation
+            await new Promise(resolve => {
+                this.map.addEventListener('gmp-animationend', resolve, { once: true });
+            });
+    
+            // Step 2: Circle around to show the Fog Bridge
+            await this.map.flyCameraTo({
+                endCamera: {
+                    center: { 
+                        lat: 37.8019,
+                        lng: -122.3975,
+                        altitude: 50
+                    },
+                    tilt: 70,
+                    heading: 90,
+                    range: 200
+                },
+                durationMillis: 4000
+            });
+    
+            // Wait for the second animation
+            await new Promise(resolve => {
+                this.map.addEventListener('gmp-animationend', resolve, { once: true });
+            });
+    
+            // Step 3: Final overview position
+            await this.map.flyCameraTo({
+                endCamera: {
+                    center: { 
+                        lat: 37.8017,
+                        lng: -122.3973,
+                        altitude: 100
+                    },
+                    tilt: 60,
+                    heading: 75,
+                    range: 400
+                },
+                durationMillis: 3000
+            });
+    
+            console.log('Exploratorium sequence completed');
+    
+        } catch (error) {
+            console.error('Error in Exploratorium exploration:', error);
+        }
     }
 };
 
