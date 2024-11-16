@@ -195,18 +195,19 @@ const NavigationController = {
 
 
     showDestinationInfo: function(destination) {
-        // Remove any existing info panel
-        const existingPanel = document.querySelector('.destination-info-panel');
-        if (existingPanel) {
-            existingPanel.remove();
-        }
+        // Previous code remains the same until the event handlers...
     
         const infoPanel = document.createElement('div');
         infoPanel.className = 'destination-info-panel';
+        
+        // Update HTML structure with initial downward arrow
         infoPanel.innerHTML = `
             <div class="info-header">
                 <h3>${destination.marketingContent.title}</h3>
-                <span class="close-btn">×</span>
+                <div class="header-buttons">
+                    <button class="toggle-minimize" aria-label="Toggle panel">▼</button>
+                    <button class="close-btn" aria-label="Close panel">×</button>
+                </div>
             </div>
             <div class="info-content">
                 <p class="subtitle">${destination.marketingContent.subtitle}</p>
@@ -223,15 +224,42 @@ const NavigationController = {
         
         document.body.appendChild(infoPanel);
         
-        // Add event listener for close button
+        // Update event listeners
         const closeBtn = infoPanel.querySelector('.close-btn');
-        closeBtn.addEventListener('click', () => {
+        const toggleBtn = infoPanel.querySelector('.toggle-minimize');
+        const header = infoPanel.querySelector('.info-header');
+    
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             infoPanel.classList.add('closing');
             setTimeout(() => infoPanel.remove(), 300);
         });
     
-        // Add animation class after a brief delay
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            infoPanel.classList.toggle('minimized');
+            // Update arrow direction based on state
+            toggleBtn.innerHTML = infoPanel.classList.contains('minimized') ? '▶' : '▼';
+        });
+    
+        header.addEventListener('click', () => {
+            if (infoPanel.classList.contains('minimized')) {
+                infoPanel.classList.remove('minimized');
+                toggleBtn.innerHTML = '▼';
+            }
+        });
+    
+        // Animation and auto-minimize
         setTimeout(() => infoPanel.classList.add('active'), 10);
+    
+        if (destination.name === 'Exploratorium') {
+            setTimeout(() => {
+                if (infoPanel && document.body.contains(infoPanel)) {
+                    infoPanel.classList.add('minimized');
+                    toggleBtn.innerHTML = '▶'; // Use right-facing triangle when minimized
+                }
+            }, 5000);
+        }
     },
 };
 
