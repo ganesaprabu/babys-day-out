@@ -378,17 +378,19 @@ const MapController = {
 
     exploreExploratorium: async function(initialLocation) {
         if (!this.map || !this.initialized) {
-            console.error('Map not properly initialized');
+            console.error('Error: Map not properly initialized for Exploratorium exploration');
             return;
         }
     
         try {
-            console.log('Starting enhanced Exploratorium exploration sequence');
+            console.log('Starting Exploratorium exploration sequence');
     
             // Create fog effect and marker immediately
             const fogEffect = this.createFogEffect();
             const welcomeMarker = this.createWelcomeMarker();
-    
+
+            // 1. Initial approach view
+            console.log('Moving to initial Exploratorium overview position');
             // 1. Quick Initial Aerial View
             await this.map.flyCameraTo({
                 endCamera: {
@@ -401,14 +403,21 @@ const MapController = {
                     heading: 120,
                     range: 800
                 },
-                durationMillis: 1500  // Reduced from 3000 to 1500
-            });
+                durationMillis: 1500
+            }); 
     
+            // Wait for first movement to complete
             await new Promise(resolve => {
                 this.map.addEventListener('gmp-animationend', resolve, { once: true });
+                console.log('Completed initial aerial view');
             });
+
+            // NEW: Add the call to exploreExterior here
+            console.log('Starting exterior exploration sequence');
+            await this.exploreExterior();  // This is the new line we're adding
     
-            // 2. Faster Close-up View
+            // 2. Move closer to the entrance
+            console.log('Moving to entrance view position');
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -420,17 +429,24 @@ const MapController = {
                     heading: 90,
                     range: 200
                 },
-                durationMillis: 2000  // Reduced from 4000 to 2000
+                durationMillis: 4000
             });
     
+            // Wait for second movement to complete
             await new Promise(resolve => {
                 this.map.addEventListener('gmp-animationend', resolve, { once: true });
+                console.log('Completed entrance view movement');
             });
     
-            // Shorter pause
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Reduced from 3000 to 1000
+            // Add welcome marker
+            console.log('Adding welcome marker');
+            await this.createWelcomeMarker();
     
-            // 3. Quick Final Position
+            // Short pause for user to observe
+            await new Promise(resolve => setTimeout(resolve, 2000));
+    
+            // 3. Final position
+            console.log('Moving to final viewing position');
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -442,18 +458,20 @@ const MapController = {
                     heading: 75,
                     range: 400
                 },
-                durationMillis: 1500  // Reduced from 3000 to 1500
+                durationMillis: 3000
             });
     
-            console.log('Enhanced Exploratorium sequence completed');
+            console.log('Completed Exploratorium initial exploration sequence');
     
         } catch (error) {
-            console.error('Error in enhanced Exploratorium exploration:', error);
+            console.error('Error in Exploratorium exploration:', error);
+            throw error;
         }
     },
 
     async createWelcomeMarker() {
         try {
+            console.log('Creating welcome marker for Exploratorium');
             const { Marker3DElement } = await google.maps.importLibrary("maps3d");
             const { PinElement } = await google.maps.importLibrary("marker");
 
@@ -466,7 +484,7 @@ const MapController = {
                 title: "Welcome to Exploratorium!"
             });
 
-            // Create custom pin
+            // Create custom pin with welcome animation
             const customPin = new PinElement({
                 background: "#4285f4",
                 scale: 1.4,
@@ -477,12 +495,136 @@ const MapController = {
 
             welcomeMarker.append(customPin);
             this.map.append(welcomeMarker);
+            console.log('Welcome marker created and added to map');
 
             return welcomeMarker;
         } catch (error) {
             console.error('Error creating welcome marker:', error);
+            throw error;
         }
     },
+
+
+    async exploreExterior() {
+        console.log('Starting exterior exploration sequence');
+        
+        try {
+            // Initialize NarrationSystem if not already done
+            console.log('Ensuring NarrationSystem is initialized');
+            if (window.NarrationSystem) {
+                window.NarrationSystem.init();
+            }
+    
+            // Initialize glass wall effect
+            await this.createGlassWallEffect();
+    
+            // Smooth approach to entrance
+            await this.map.flyCameraTo({
+                endCamera: {
+                    center: { 
+                        lat: 37.8019,
+                        lng: -122.3975,
+                        altitude: 80
+                    },
+                    tilt: 75,
+                    heading: 85,
+                    range: 150
+                },
+                durationMillis: 3000
+            });
+    
+            // Show initial narration after ensuring container exists
+            if (window.NarrationSystem) {
+                console.log('Showing welcome narration');
+                window.NarrationSystem.show(
+                    "Welcome to the Exploratorium! Let's explore the wonders of science, art, and discovery together!",
+                    "🔬",
+                    7000  // Increased duration for better readability
+                );
+            }
+    
+            // Add waterfront highlight
+            await this.highlightWaterfront();
+    
+            return true;
+        } catch (error) {
+            console.error('Error in exterior exploration:', error);
+            return false;
+        }
+    },
+    
+    async createGlassWallEffect() {
+        console.log('Creating glass wall effect');
+        try {
+            const { Polygon3DElement } = await google.maps.importLibrary("maps3d");
+            
+            // Create glass wall polygon with correct properties
+            const glassWall = new Polygon3DElement({
+                // Change from 'relative-to-ground' to 'RELATIVE_TO_GROUND'
+                altitudeMode: "RELATIVE_TO_GROUND",
+                fillColor: "rgba(255, 255, 255, 0.2)",
+                strokeColor: "#FFFFFF",
+                strokeWidth: 1,
+                extruded: true
+            });
+    
+            // Set coordinates using outerCoordinates property
+            await customElements.whenDefined(glassWall.localName);
+            glassWall.outerCoordinates = [
+                { lat: 37.8018, lng: -122.3974, altitude: 30 },
+                { lat: 37.8019, lng: -122.3975, altitude: 30 },
+                { lat: 37.8020, lng: -122.3974, altitude: 30 },
+                { lat: 37.8019, lng: -122.3973, altitude: 30 },
+                { lat: 37.8018, lng: -122.3974, altitude: 30 }  // Close the polygon
+            ];
+    
+            console.log('Adding glass wall to map');
+            this.map.append(glassWall);
+            return glassWall;
+            
+        } catch (error) {
+            console.error('Error creating glass wall effect:', error);
+            return null;
+        }
+    },
+    
+    async highlightWaterfront() {
+        console.log('Highlighting waterfront view');
+        try {
+            const { Polyline3DElement } = await google.maps.importLibrary("maps3d");
+            
+            // Create waterfront highlight line using correct property name 'coordinates'
+            const waterline = new Polyline3DElement({
+                altitudeMode: "RELATIVE_TO_GROUND",
+                strokeColor: '#4285f4',
+                strokeWidth: 3
+            });
+    
+            // Set coordinates after element is defined
+            await customElements.whenDefined(waterline.localName);
+            waterline.coordinates = [
+                { lat: 37.8017, lng: -122.3972, altitude: 5 },
+                { lat: 37.8021, lng: -122.3976, altitude: 5 }
+            ];
+    
+            console.log('Adding waterline to map');
+            this.map.append(waterline);
+            
+            // Add animated effect
+            const animate = () => {
+                const opacity = 0.3 + Math.sin(Date.now() / 1000) * 0.5;
+                waterline.strokeOpacity = opacity;
+                requestAnimationFrame(animate);
+            };
+            animate();
+    
+            return waterline;
+        } catch (error) {
+            console.error('Error creating waterfront highlight:', error);
+            return null;
+        }
+    }
+
 };
 
 window.MapController = MapController;
