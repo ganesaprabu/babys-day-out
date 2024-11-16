@@ -22,11 +22,6 @@ html, body {
     opacity: 1;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
 /* Map Styles */
 .map-container {
     width: 100%;
@@ -105,8 +100,6 @@ html, body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
-/* Add to css/main.css */
 
 .welcome-screen {
     position: fixed;
@@ -193,31 +186,10 @@ html, body {
     box-shadow: 0 6px 16px rgba(66, 133, 244, 0.4);
 }
 
-.hidden {
-    display: none !important;
-}
-
-/* Update existing loading screen styles */
-.loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-/* css/main.css */
 gmp-map-3d {
     width: 100%;
     height: 100%;
 }
-
-/* Add to css/main.css */
 
 /* Map Controls Container */
 .gmp-map-controls {
@@ -273,7 +245,6 @@ gmp-map-3d {
     gap: 2px;
 }
 
-
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -293,4 +264,122 @@ gmp-map-3d {
 .location-marker:hover .pulse-ring {
     background-color: rgba(66, 133, 244, 0.6);
     animation-duration: 1s;
+}
+
+.point-info-content h3 {
+    color: #4285f4;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+}
+
+.point-info-content p {
+    margin: 0;
+    line-height: 1.5;
+    color: #333;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes fadeInDown {
+    from { 
+        opacity: 0; 
+        transform: translateY(-20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+
+.story-panel {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 300px;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    display: none;
+}
+
+.story-panel.visible {
+    opacity: 1;
+    transform: translateY(0);
+    display: block;
+}
+
+/* Add styles for the new point-info-window class */
+.point-info-window {
+    position: relative;
+}
+
+.close-info-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.close-info-btn:hover {
+    color: #4285f4;
+}
+
+.story-content h2 {
+    color: #4285f4;
+    margin: 0 0 12px 0;
+    padding-right: 30px; /* Make room for close button */
+}
+
+.story-content p {
+    margin: 0;
+    line-height: 1.5;
+    color: #333;
 }

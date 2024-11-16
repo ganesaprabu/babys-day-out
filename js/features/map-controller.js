@@ -381,10 +381,15 @@ const MapController = {
             console.error('Map not properly initialized');
             return;
         }
-
+    
         try {
             console.log('Starting enhanced Exploratorium exploration sequence');
-
+    
+            // Create fog effect and marker immediately
+            const fogEffect = this.createFogEffect();
+            const welcomeMarker = this.createWelcomeMarker();
+    
+            // 1. Quick Initial Aerial View
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -396,13 +401,14 @@ const MapController = {
                     heading: 120,
                     range: 800
                 },
-                durationMillis: 3000
+                durationMillis: 1500  // Reduced from 3000 to 1500
             });
-
+    
             await new Promise(resolve => {
                 this.map.addEventListener('gmp-animationend', resolve, { once: true });
             });
-
+    
+            // 2. Faster Close-up View
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -414,73 +420,17 @@ const MapController = {
                     heading: 90,
                     range: 200
                 },
-                durationMillis: 4000
+                durationMillis: 2000  // Reduced from 4000 to 2000
             });
-
-            const fogEffect = await this.createFogEffect();
-
-            const points = [
-                {
-                    position: { lat: 37.8019, lng: -122.3974 },
-                    title: "Fog Bridge",
-                    icon: "🌫️",
-                    description: "Experience the mesmerizing fog art installation!"
-                },
-                {
-                    position: { lat: 37.8018, lng: -122.3973 },
-                    title: "Wave Organ",
-                    icon: "🌊",
-                    description: "Listen to the music of the waves"
-                },
-                {
-                    position: { lat: 37.8020, lng: -122.3972 },
-                    title: "Bay Observatory",
-                    icon: "🔭",
-                    description: "Explore the intersection of science and the Bay"
-                }
-            ];
-
-            for (const point of points) {
-                const { Marker3DElement } = await google.maps.importLibrary("maps3d");
-                const marker = new Marker3DElement({
-                    position: point.position,
-                    title: point.title
-                });
-
-                // Create SVG marker
-                const svgString = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-                        <!-- Background circle -->
-                        <circle cx="24" cy="24" r="20" fill="white" stroke="#4285f4" stroke-width="2"/>
-                        
-                        <!-- Icon text -->
-                        <text x="24" y="32" 
-                            font-family="Arial, sans-serif" 
-                            font-size="24" 
-                            text-anchor="middle" 
-                            fill="#4285f4">${point.icon}</text>
-                            
-                        <!-- Pulse effect -->
-                        <circle cx="24" cy="24" r="22" fill="none" stroke="#4285f4" stroke-width="2" opacity="0.6">
-                            <animate attributeName="r" values="22;26;22" dur="2s" repeatCount="indefinite"/>
-                            <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite"/>
-                        </circle>
-                    </svg>
-                `;
-
-                const parser = new DOMParser();
-                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-                const template = document.createElement('template');
-                template.content.appendChild(svgDoc.documentElement);
-                marker.append(template);
-
-                marker.addEventListener('click', () => {
-                    this.showPointInfo(point);
-                });
-
-                this.map.append(marker);
-            }
-
+    
+            await new Promise(resolve => {
+                this.map.addEventListener('gmp-animationend', resolve, { once: true });
+            });
+    
+            // Shorter pause
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Reduced from 3000 to 1000
+    
+            // 3. Quick Final Position
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -492,44 +442,46 @@ const MapController = {
                     heading: 75,
                     range: 400
                 },
-                durationMillis: 3000
+                durationMillis: 1500  // Reduced from 3000 to 1500
             });
-
+    
             console.log('Enhanced Exploratorium sequence completed');
-
+    
         } catch (error) {
             console.error('Error in enhanced Exploratorium exploration:', error);
         }
     },
 
-    showPointInfo: function(point) {
-        const existingInfo = document.querySelector('.point-info-window');
-        if (existingInfo) existingInfo.remove();
+    async createWelcomeMarker() {
+        try {
+            const { Marker3DElement } = await google.maps.importLibrary("maps3d");
+            const { PinElement } = await google.maps.importLibrary("marker");
 
-        const infoWindow = document.createElement('div');
-        infoWindow.className = 'point-info-window';
-        infoWindow.innerHTML = `
-            <div style="
-                position: fixed;
-                left: 20px;
-                top: 20px;
-                background: white;
-                padding: 15px;
-                border-radius: 8px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                max-width: 300px;
-                z-index: 1000;
-                animation: slideIn 0.3s ease-out;
-            ">
-                <h3 style="margin: 0 0 10px 0; display: flex; align-items: center;">
-                    <span style="margin-right: 8px;">${point.icon}</span>
-                    ${point.title}
-                </h3>
-                <p style="margin: 0;">${point.description}</p>
-            </div>
-        `;
+            // Create welcome marker
+            const welcomeMarker = new Marker3DElement({
+                position: { 
+                    lat: 37.8019, 
+                    lng: -122.3975
+                },
+                title: "Welcome to Exploratorium!"
+            });
 
-        document.body.appendChild(infoWindow);
+            // Create custom pin
+            const customPin = new PinElement({
+                background: "#4285f4",
+                scale: 1.4,
+                borderColor: "#fff",
+                glyphColor: "#fff",
+                glyph: "👋"
+            });
+
+            welcomeMarker.append(customPin);
+            this.map.append(welcomeMarker);
+
+            return welcomeMarker;
+        } catch (error) {
+            console.error('Error creating welcome marker:', error);
+        }
     },
 };
 
