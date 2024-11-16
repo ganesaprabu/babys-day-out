@@ -22,7 +22,6 @@
     animation: slideIn 0.5s ease-out;
 }
 
-/* Add to css/animations.css */
 
 @keyframes bookOpen {
     0% {
@@ -90,4 +89,38 @@
 /* Add hover effect */
 .book-cover:hover .book-cover-inner {
     animation: bookOpen 2s ease-in-out;
+}
+
+@keyframes fogFlow {
+    0% { 
+        opacity: 0.3;
+        transform: translateX(0);
+    }
+    50% { 
+        opacity: 0.6;
+        transform: translateX(20px);
+    }
+    100% { 
+        opacity: 0.3;
+        transform: translateX(0);
+    }
+}
+
+.fog-effect {
+    animation: fogFlow 8s infinite;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.point-info-window {
+    animation: slideIn 0.3s ease-out;
 }

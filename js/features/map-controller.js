@@ -328,16 +328,63 @@ const MapController = {
         await this.startCityOverview();
     },
 
+
+    createFogEffect: async function() {
+        if (!this.map || !this.initialized) {
+            console.error('Map not properly initialized');
+            return;
+        }
+
+        try {
+            const { Polygon3DElement } = await google.maps.importLibrary("maps3d");
+
+            const existingFog = document.querySelector('gmp-polygon-3d.fog-effect');
+            if (existingFog) {
+                existingFog.remove();
+            }
+
+            const fogCoordinates = [
+                { lat: 37.8020, lng: -122.3976, altitude: 5 },
+                { lat: 37.8021, lng: -122.3977, altitude: 5 },
+                { lat: 37.8021, lng: -122.3975, altitude: 5 },
+                { lat: 37.8019, lng: -122.3974, altitude: 5 },
+                { lat: 37.8018, lng: -122.3976, altitude: 5 }
+            ];
+
+            const fogPolygon = new Polygon3DElement();
+            fogPolygon.className = 'fog-effect';
+            fogPolygon.altitudeMode = 'RELATIVE_TO_GROUND';
+            fogPolygon.fillColor = 'rgba(255, 255, 255, 0.6)';
+            fogPolygon.strokeColor = 'rgba(255, 255, 255, 0.2)';
+            fogPolygon.strokeWidth = 2;
+
+            await customElements.whenDefined(fogPolygon.localName);
+            fogPolygon.outerCoordinates = fogCoordinates;
+
+            const animateFog = () => {
+                const opacity = 0.3 + Math.sin(Date.now() / 1000) * 0.3;
+                fogPolygon.fillColor = `rgba(255, 255, 255, ${opacity})`;
+                requestAnimationFrame(animateFog);
+            };
+
+            this.map.append(fogPolygon);
+            animateFog();
+
+            return fogPolygon;
+        } catch (error) {
+            console.error('Error creating fog effect:', error);
+        }
+    },
+
     exploreExploratorium: async function(initialLocation) {
         if (!this.map || !this.initialized) {
             console.error('Map not properly initialized');
             return;
         }
-    
+
         try {
-            console.log('Starting Exploratorium exploration sequence');
-    
-            // Step 1: Initial approach from the bay
+            console.log('Starting enhanced Exploratorium exploration sequence');
+
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -351,13 +398,11 @@ const MapController = {
                 },
                 durationMillis: 3000
             });
-    
-            // Wait for the first animation
+
             await new Promise(resolve => {
                 this.map.addEventListener('gmp-animationend', resolve, { once: true });
             });
-    
-            // Step 2: Circle around to show the Fog Bridge
+
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -371,13 +416,71 @@ const MapController = {
                 },
                 durationMillis: 4000
             });
-    
-            // Wait for the second animation
-            await new Promise(resolve => {
-                this.map.addEventListener('gmp-animationend', resolve, { once: true });
-            });
-    
-            // Step 3: Final overview position
+
+            const fogEffect = await this.createFogEffect();
+
+            const points = [
+                {
+                    position: { lat: 37.8019, lng: -122.3974 },
+                    title: "Fog Bridge",
+                    icon: "🌫️",
+                    description: "Experience the mesmerizing fog art installation!"
+                },
+                {
+                    position: { lat: 37.8018, lng: -122.3973 },
+                    title: "Wave Organ",
+                    icon: "🌊",
+                    description: "Listen to the music of the waves"
+                },
+                {
+                    position: { lat: 37.8020, lng: -122.3972 },
+                    title: "Bay Observatory",
+                    icon: "🔭",
+                    description: "Explore the intersection of science and the Bay"
+                }
+            ];
+
+            for (const point of points) {
+                const { Marker3DElement } = await google.maps.importLibrary("maps3d");
+                const marker = new Marker3DElement({
+                    position: point.position,
+                    title: point.title
+                });
+
+                // Create SVG marker
+                const svgString = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+                        <!-- Background circle -->
+                        <circle cx="24" cy="24" r="20" fill="white" stroke="#4285f4" stroke-width="2"/>
+                        
+                        <!-- Icon text -->
+                        <text x="24" y="32" 
+                            font-family="Arial, sans-serif" 
+                            font-size="24" 
+                            text-anchor="middle" 
+                            fill="#4285f4">${point.icon}</text>
+                            
+                        <!-- Pulse effect -->
+                        <circle cx="24" cy="24" r="22" fill="none" stroke="#4285f4" stroke-width="2" opacity="0.6">
+                            <animate attributeName="r" values="22;26;22" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
+                `;
+
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+                const template = document.createElement('template');
+                template.content.appendChild(svgDoc.documentElement);
+                marker.append(template);
+
+                marker.addEventListener('click', () => {
+                    this.showPointInfo(point);
+                });
+
+                this.map.append(marker);
+            }
+
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -391,13 +494,43 @@ const MapController = {
                 },
                 durationMillis: 3000
             });
-    
-            console.log('Exploratorium sequence completed');
-    
+
+            console.log('Enhanced Exploratorium sequence completed');
+
         } catch (error) {
-            console.error('Error in Exploratorium exploration:', error);
+            console.error('Error in enhanced Exploratorium exploration:', error);
         }
-    }
+    },
+
+    showPointInfo: function(point) {
+        const existingInfo = document.querySelector('.point-info-window');
+        if (existingInfo) existingInfo.remove();
+
+        const infoWindow = document.createElement('div');
+        infoWindow.className = 'point-info-window';
+        infoWindow.innerHTML = `
+            <div style="
+                position: fixed;
+                left: 20px;
+                top: 20px;
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                max-width: 300px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            ">
+                <h3 style="margin: 0 0 10px 0; display: flex; align-items: center;">
+                    <span style="margin-right: 8px;">${point.icon}</span>
+                    ${point.title}
+                </h3>
+                <p style="margin: 0;">${point.description}</p>
+            </div>
+        `;
+
+        document.body.appendChild(infoWindow);
+    },
 };
 
 window.MapController = MapController;
