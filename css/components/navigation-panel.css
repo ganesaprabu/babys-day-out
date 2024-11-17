@@ -10,7 +10,9 @@
     transition: right 0.5s ease-in-out;
     z-index: 1000;
     padding: 20px;
+    padding-bottom: 120px; /* NEW: Added padding to prevent overlap with map controls */
     overflow-y: auto;
+    max-height: calc(100vh - 120px); /* NEW: Ensure panel doesn't overlap controls */
 }
 
 .navigation-panel.active {
