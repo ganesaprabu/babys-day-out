@@ -385,9 +385,8 @@ const MapController = {
         try {
             console.log('Starting Exploratorium exploration sequence');
     
-            // Create fog effect and marker immediately
+            // Create fog effect
             const fogEffect = this.createFogEffect();
-            const welcomeMarker = this.createWelcomeMarker();
     
             // 1. Initial approach view
             console.log('Moving to initial Exploratorium overview position');
@@ -405,50 +404,27 @@ const MapController = {
                 durationMillis: 1500
             }); 
     
-            // Wait for first movement to complete
             await new Promise(resolve => {
                 this.map.addEventListener('gmp-animationend', resolve, { once: true });
                 console.log('Completed initial aerial view');
             });
     
-            // Call exterior exploration
+            // Explore exterior - removing initial narration from here
             console.log('Starting exterior exploration sequence');
             await this.exploreExterior();
     
-            // NEW: Add entry sequence here
-            console.log('Starting entry sequence');
-            await this.executeEntrySequence();  // Add this line here
+            // Execute entry sequence
+            console.log('Initiating entry sequence');
+            try {
+                await this.executeEntrySequence();
+            } catch (error) {
+                console.error('Error during entry sequence:', error);
+            }
     
-            // 2. Move closer to the entrance (this will now happen after the entry sequence)
-            console.log('Moving to entrance view position');
-            await this.map.flyCameraTo({
-                endCamera: {
-                    center: { 
-                        lat: 37.8019,
-                        lng: -122.3975,
-                        altitude: 50
-                    },
-                    tilt: 70,
-                    heading: 90,
-                    range: 200
-                },
-                durationMillis: 4000
-            });
+            // Wait a moment before final positioning
+            await new Promise(resolve => setTimeout(resolve, 1000));
     
-            // Wait for second movement to complete
-            await new Promise(resolve => {
-                this.map.addEventListener('gmp-animationend', resolve, { once: true });
-                console.log('Completed entrance view movement');
-            });
-    
-            // Add welcome marker
-            console.log('Adding welcome marker');
-            await this.createWelcomeMarker();
-    
-            // Short pause for user observation
-            await new Promise(resolve => setTimeout(resolve, 2000));
-    
-            // 3. Final position
+            // Final position
             console.log('Moving to final viewing position');
             await this.map.flyCameraTo({
                 endCamera: {
@@ -477,7 +453,7 @@ const MapController = {
             console.log('Creating welcome marker for Exploratorium');
             const { Marker3DElement } = await google.maps.importLibrary("maps3d");
             const { PinElement } = await google.maps.importLibrary("marker");
-
+    
             // Create welcome marker
             const welcomeMarker = new Marker3DElement({
                 position: { 
@@ -486,7 +462,7 @@ const MapController = {
                 },
                 title: "Welcome to Exploratorium!"
             });
-
+    
             // Create custom pin with welcome animation
             const customPin = new PinElement({
                 background: "#4285f4",
@@ -495,11 +471,19 @@ const MapController = {
                 glyphColor: "#fff",
                 glyph: "👋"
             });
-
+    
             welcomeMarker.append(customPin);
             this.map.append(welcomeMarker);
             console.log('Welcome marker created and added to map');
-
+    
+            // Remove marker after 3 seconds
+            setTimeout(() => {
+                console.log('Removing welcome marker');
+                if (welcomeMarker.parentElement) {
+                    welcomeMarker.remove();
+                }
+            }, 3000);
+    
             return welcomeMarker;
         } catch (error) {
             console.error('Error creating welcome marker:', error);
@@ -512,12 +496,6 @@ const MapController = {
         console.log('Starting exterior exploration sequence');
         
         try {
-            // Initialize NarrationSystem if not already done
-            console.log('Ensuring NarrationSystem is initialized');
-            if (window.NarrationSystem) {
-                window.NarrationSystem.init();
-            }
-    
             // Initialize glass wall effect
             await this.createGlassWallEffect();
     
@@ -535,16 +513,6 @@ const MapController = {
                 },
                 durationMillis: 3000
             });
-    
-            // Show initial narration after ensuring container exists
-            if (window.NarrationSystem) {
-                console.log('Showing welcome narration');
-                window.NarrationSystem.show(
-                    "Welcome to the Exploratorium! Let's explore the wonders of science, art, and discovery together!",
-                    "🔬",
-                    2000  // Increased duration for better readability
-                );
-            }
     
             // Add waterfront highlight
             await this.highlightWaterfront();
@@ -629,12 +597,11 @@ const MapController = {
     },
 
     async executeEntrySequence() {
-        console.log('Starting entry sequence');
+        console.log('Starting simplified entry sequence');
+        
         try {
-            // Initialize VirtualEntryHandler
-            await VirtualEntryHandler.init();
-    
-            // Update camera position for door approach
+            // Step 1: Move to entrance position
+            console.log('Moving to entrance position');
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -642,11 +609,29 @@ const MapController = {
                         lng: -122.3975,
                         altitude: 20
                     },
-                    tilt: 80,
-                    heading: 90,
+                    tilt: 65,
+                    heading: 85,
                     range: 50
                 },
                 durationMillis: 2000
+            });
+    
+            await new Promise(resolve => setTimeout(resolve, 500));
+    
+            // Step 2: Smooth transition inside
+            console.log('Transitioning inside');
+            await this.map.flyCameraTo({
+                endCamera: {
+                    center: { 
+                        lat: 37.8019,
+                        lng: -122.3974,
+                        altitude: 15
+                    },
+                    tilt: 60,
+                    heading: 90,
+                    range: 40
+                },
+                durationMillis: 2500
             });
     
             // Wait for camera movement to complete
@@ -654,19 +639,26 @@ const MapController = {
                 this.map.addEventListener('gmp-animationend', resolve, { once: true });
             });
     
-            // Animate doors opening
-            await VirtualEntryHandler.animateDoors(this.map, true);
-    
-            // Show welcoming narration
+            // Show narration only here, removed from exploreExterior
             if (window.NarrationSystem) {
-                window.NarrationSystem.show(
-                    "Welcome inside the Exploratorium! Let's explore the wonders of science, art, and discovery together!",
-                    "🔬",
-                    5000
+                console.log('Showing welcome narration');
+                await window.NarrationSystem.show(
+                   // "Welcome to the Exploratorium! Get ready to discover amazing exhibits and interactive experiences! 🔬✨",
+                   "Welcome to the Exploratorium!!!",
+                    "🏛️",
+                    1000
                 );
             }
     
-            // Move camera through the doors
+        } catch (error) {
+            console.error('Error in entry sequence:', error);
+            await this.fallbackEntrySequence();
+        }
+    },
+
+    async fallbackEntrySequence() {
+        console.log('Executing fallback entry sequence');
+        try {
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -680,12 +672,8 @@ const MapController = {
                 },
                 durationMillis: 3000
             });
-    
-            // Add enhanced glass effects
-            VirtualEntryHandler.enhanceGlassEffect();
-    
         } catch (error) {
-            console.error('Error in entry sequence:', error);
+            console.error('Error in fallback entry sequence:', error);
         }
     }
 
