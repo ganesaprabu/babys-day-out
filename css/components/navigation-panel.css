@@ -86,10 +86,6 @@
     transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.intro-bubble.active {
-    opacity: 1;
-}
-
 .intro-bubble::after {
     content: '';
     position: absolute;
@@ -100,12 +96,6 @@
     border-style: solid;
     border-color: #4285f4 transparent transparent;
     filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.1));
-}
-
-.intro-bubble.active {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-    animation: bubblePop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .mappy-message {
@@ -323,34 +313,32 @@
     display: block;
 }
 
-.destination-info-panel.minimized:hover {
-    transform: translateX(0);
-}
-
 /* Add expand/minimize toggle button */
 .toggle-minimize {
     background: transparent;
     color: white;
     border: none;
-    padding: 8px;
+    padding: 4px 8px;
     cursor: pointer;
-    font-size: 14px; /* Smaller font size for better triangle appearance */
+    font-size: 12px;
+    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.8;
-    transition: all 0.3s ease;
-    transform: rotate(0deg); /* Initial state */
+    margin-right: 5px;
+}
+
+/* Arrow transformation states */
+.toggle-minimize::before {
+    content: '▲';
+    display: block;
+    transition: transform 0.3s ease;
 }
 
 .toggle-minimize:hover {
     opacity: 1;
 }
 
-.destination-info-panel.minimized .toggle-minimize {
-    transform: rotate(0deg); /* Reset any rotation */
-}
-
-.destination-info-panel.minimized .toggle-minimize {
-    transform: translateY(-50%) rotate(-90deg);
+.destination-info-panel.minimized .toggle-minimize::before {
+    transform: rotate(180deg);  /* Rotate the triangle when minimized */
 }

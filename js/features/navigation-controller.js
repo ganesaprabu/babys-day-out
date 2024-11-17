@@ -202,13 +202,13 @@ const NavigationController = {
         
         // Update HTML structure with initial downward arrow
         infoPanel.innerHTML = `
-            <div class="info-header">
-                <h3>${destination.marketingContent.title}</h3>
-                <div class="header-buttons">
-                    <button class="toggle-minimize" aria-label="Toggle panel">▼</button>
-                    <button class="close-btn" aria-label="Close panel">×</button>
-                </div>
+        <div class="info-header">
+            <h3>${destination.marketingContent.title}</h3>
+            <div class="header-buttons">
+                <button class="toggle-minimize" aria-label="Toggle panel"></button>
+                <button class="close-btn" aria-label="Close panel">×</button>
             </div>
+        </div>
             <div class="info-content">
                 <p class="subtitle">${destination.marketingContent.subtitle}</p>
                 <p class="description">${destination.marketingContent.description}</p>
@@ -239,7 +239,7 @@ const NavigationController = {
             e.stopPropagation();
             infoPanel.classList.toggle('minimized');
             // Update arrow direction based on state
-            toggleBtn.innerHTML = infoPanel.classList.contains('minimized') ? '▶' : '▼';
+            //toggleBtn.innerHTML = infoPanel.classList.contains('minimized') ? '▶' : '▼';
         });
     
         header.addEventListener('click', () => {
