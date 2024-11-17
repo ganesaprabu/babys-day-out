@@ -376,21 +376,79 @@ const MapController = {
         }
     },
 
+    /**
+     * Exploratorium Sequence:
+     * 1. Initial aerial view with fog effect and overview (altitude: 300)
+     * 2. Exterior exploration with glass walls
+     * 3. Entry sequence with welcome narration
+     * 4. Cleanup previous effects
+     * 5. Tactile Dome showcase with interactive features
+     */
     async exploreExploratorium(initialLocation) {
         if (!this.map || !this.initialized) {
-            console.error('Error: Map not properly initialized for Exploratorium exploration');
+            console.error('Error: Map not properly initialized');
             return;
         }
     
         try {
             console.log('Starting Exploratorium exploration sequence');
     
-            // Create fog effect
-            const fogEffect = this.createFogEffect();
+            // Step 1: Initial aerial view with fog effect
+            const fogEffect = await this.createFogEffect();
+            await this.showExploratoriumOverview();
     
-            // 1. Initial approach view
-            console.log('Moving to initial Exploratorium overview position');
-            await this.map.flyCameraTo({
+            // Step 2: Exterior exploration with glass walls
+            await this.exploreExterior();
+    
+            // Step 3: Entry sequence
+            await this.executeEntrySequence();
+    
+            // Step 4: After entry is complete, clean up previous effects
+            this.cleanupEffects(); // New method to clean up
+    
+            // Step 5: Only then show Tactile Dome
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Brief pause
+            await this.showcaseTactileDome();
+    
+        } catch (error) {
+            console.error('Error in Exploratorium exploration:', error);
+            this.cleanupEffects(); // Ensure cleanup on error
+            throw error;
+        }
+    },
+
+    cleanupEffects() {
+        try {
+            // Remove fog effect if exists
+            const existingFog = document.querySelector('gmp-polygon-3d.fog-effect');
+            if (existingFog) existingFog.remove();
+        
+            // Remove glass walls if exist
+            const glassWalls = document.querySelectorAll('gmp-polygon-3d:not(.dome)');
+            glassWalls.forEach(wall => wall.remove());
+            
+            // Remove any existing dome
+            const existingDome = document.querySelector('.dome');
+            if (existingDome) {
+                console.log('Removing existing dome');
+                existingDome.remove();
+            }
+            
+            // Also cleanup any existing markers
+            const markers = document.querySelectorAll('gmp-marker-3d');
+            markers.forEach(marker => marker.remove());
+            
+            console.log('Cleaned up all effects: fog, walls, dome, and markers');
+        } catch (error) {
+            console.error('Error in cleanup:', error);
+        }
+    },
+
+    // Add this method
+    async showExploratoriumOverview() {
+        console.log('Starting Exploratorium overview');
+        try {
+            return await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
                         lat: 37.8025,
@@ -403,48 +461,8 @@ const MapController = {
                 },
                 durationMillis: 1500
             }); 
-    
-            await new Promise(resolve => {
-                this.map.addEventListener('gmp-animationend', resolve, { once: true });
-                console.log('Completed initial aerial view');
-            });
-    
-            // Explore exterior - removing initial narration from here
-            console.log('Starting exterior exploration sequence');
-            await this.exploreExterior();
-    
-            // Execute entry sequence
-            console.log('Initiating entry sequence');
-            try {
-                await this.executeEntrySequence();
-            } catch (error) {
-                console.error('Error during entry sequence:', error);
-            }
-    
-            // Wait a moment before final positioning
-            await new Promise(resolve => setTimeout(resolve, 1000));
-    
-            // Final position
-            console.log('Moving to final viewing position');
-            await this.map.flyCameraTo({
-                endCamera: {
-                    center: { 
-                        lat: 37.8017,
-                        lng: -122.3973,
-                        altitude: 100
-                    },
-                    tilt: 60,
-                    heading: 75,
-                    range: 400
-                },
-                durationMillis: 3000
-            });
-    
-            console.log('Completed Exploratorium exploration sequence');
-    
         } catch (error) {
-            console.error('Error in Exploratorium exploration:', error);
-            throw error;
+            console.error('Error in Exploratorium overview:', error);
         }
     },
 
@@ -616,7 +634,7 @@ const MapController = {
                 durationMillis: 2000
             });
     
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 1000));
     
             // Step 2: Smooth transition inside
             console.log('Transitioning inside');
@@ -639,16 +657,21 @@ const MapController = {
                 this.map.addEventListener('gmp-animationend', resolve, { once: true });
             });
     
+            // Longer pause before narration
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             // Show narration only here, removed from exploreExterior
             if (window.NarrationSystem) {
                 console.log('Showing welcome narration');
                 await window.NarrationSystem.show(
-                   // "Welcome to the Exploratorium! Get ready to discover amazing exhibits and interactive experiences! 🔬✨",
-                   "Welcome to the Exploratorium!!!",
-                    "🏛️",
-                    1000
+                    `🏛️ Exploratorium: Welcome to a world of wonder and discovery!`,
+                    "", // No need for separate icon since it's in the message
+                    3000
                 );
             }
+
+            // Wait for narration to complete
+            await new Promise(resolve => setTimeout(resolve, 4000));
     
         } catch (error) {
             console.error('Error in entry sequence:', error);
@@ -674,6 +697,107 @@ const MapController = {
             });
         } catch (error) {
             console.error('Error in fallback entry sequence:', error);
+        }
+    },
+    async showcaseTactileDome() {
+        console.log('Starting Tactile Dome showcase');
+        if (!this.map || !this.initialized) {
+            console.error('Map not properly initialized');
+            return;
+        }
+    
+        try {
+            // Clean up any existing elements first
+            this.cleanupEffects();
+            // 1. Create the dome visualization
+            const { Polygon3DElement } = await google.maps.importLibrary("maps3d");
+            
+            // Create dome with distinct class
+            const dome = new Polygon3DElement({
+                altitudeMode: "RELATIVE_TO_GROUND",
+                fillColor: "rgba(65, 105, 225, 0.6)",
+                strokeColor: "#FFFFFF",
+                strokeWidth: 2,
+                extruded: true,
+                className: 'dome' // Add class for identification
+            });
+    
+            // Define dome coordinates
+            const domeRadius = 0.00015; // Adjust size as needed
+            const domeCenter = { lat: 37.8019, lng: -122.3974 };
+            const domePoints = [];
+            
+            // Create circular dome shape
+            for (let i = 0; i <= 32; i++) {
+                const angle = (i / 32) * Math.PI * 2;
+                domePoints.push({
+                    lat: domeCenter.lat + domeRadius * Math.cos(angle),
+                    lng: domeCenter.lng + domeRadius * Math.sin(angle),
+                    altitude: 20 // Height of the dome
+                });
+            }
+    
+            await customElements.whenDefined(dome.localName);
+            dome.outerCoordinates = domePoints;
+            this.map.append(dome);
+    
+            // 2. Camera movement to showcase the dome
+            await this.map.flyCameraTo({
+                endCamera: {
+                    center: { 
+                        lat: 37.8019,
+                        lng: -122.3974,
+                        altitude: 30
+                    },
+                    tilt: 60,
+                    heading: 85,
+                    range: 100
+                },
+                durationMillis: 2000
+            });
+    
+            // 3. Add pulsing effect to the dome
+            const animateDome = () => {
+                const opacity = 0.4 + Math.sin(Date.now() / 1000) * 0.2;
+                dome.fillColor = `rgba(65, 105, 225, ${opacity})`;
+                requestAnimationFrame(animateDome);
+            };
+            animateDome();
+    
+            // 4. Show narration
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (window.NarrationSystem) {
+                await window.NarrationSystem.show(
+                    `🎯 The Tactile Dome: Navigate through the dark maze using only your sense of touch!`,
+                    "", // No need for separate icon since it's in the message
+                    4000
+                );
+            }
+    
+            dome.addEventListener('mouseover', () => {
+                dome.fillColor = "rgba(65, 105, 225, 0.8)";
+            });
+    
+            dome.addEventListener('mouseout', () => {
+                dome.fillColor = "rgba(65, 105, 225, 0.6)";
+            });
+    
+            dome.addEventListener('click', () => {
+                if (window.NavigationController) {
+                    const domeInfo = LOCATIONS.EXPLORATORIUM.viewpoints.find(v => v.name === 'Tactile Dome');
+                    if (domeInfo) {
+                        window.NavigationController.showDestinationInfo({
+                            marketingContent: domeInfo.marketingContent
+                        });
+                    }
+                }
+            });
+    
+            return dome;
+    
+        } catch (error) {
+            console.error('Error in Tactile Dome showcase:', error);
+            throw error;
         }
     }
 

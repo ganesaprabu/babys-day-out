@@ -90,6 +90,27 @@ const LOCATIONS = {
         },
         viewpoints: [
             {
+                name: 'Tactile Dome',
+                lat: 37.8019,
+                lng: -122.3974,
+                zoom: 19,
+                tilt: 60,
+                heading: 85,
+                altitude: 15,
+                marketingContent: {
+                    title: "The Tactile Dome",
+                    description: "Navigate through complete darkness using only your sense of touch!",
+                    features: [
+                        "45-minute sensory adventure",
+                        "Total darkness experience",
+                        "Professional guides available",
+                        "Perfect for team building"
+                    ],
+                    promoMessage: "Special night tour packages available!",
+                    callToAction: "Book Your Sensory Journey"
+                }
+            },
+            {
                 name: 'Museum Front',
                 lat: 37.8017,
                 lng: -122.3973,
