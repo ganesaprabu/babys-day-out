@@ -699,16 +699,18 @@ const MapController = {
             console.error('Error in fallback entry sequence:', error);
         }
     },
+
     async showcaseTactileDome() {
         console.log('Starting Tactile Dome showcase');
         if (!this.map || !this.initialized) {
             console.error('Map not properly initialized');
             return;
         }
-    
+
         try {
             // Clean up any existing elements first
             this.cleanupEffects();
+            
             // 1. Create the dome visualization
             const { Polygon3DElement } = await google.maps.importLibrary("maps3d");
             
@@ -721,7 +723,7 @@ const MapController = {
                 extruded: true,
                 className: 'dome' // Add class for identification
             });
-    
+
             // Define dome coordinates
             const domeRadius = 0.00015; // Adjust size as needed
             const domeCenter = { lat: 37.8019, lng: -122.3974 };
@@ -736,12 +738,12 @@ const MapController = {
                     altitude: 20 // Height of the dome
                 });
             }
-    
+
             await customElements.whenDefined(dome.localName);
             dome.outerCoordinates = domePoints;
             this.map.append(dome);
-    
-            // 2. Camera movement to showcase the dome
+
+            // 2. Initial camera movement to showcase the dome
             await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
@@ -755,16 +757,63 @@ const MapController = {
                 },
                 durationMillis: 2000
             });
-    
-            // 3. Add pulsing effect to the dome
+
+            // Wait for initial movement to complete and pause
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            console.log('Starting cinematic rotation around Tactile Dome');
+            
+            // 3. Execute cinematic rotation
+            try {
+                await this.map.flyCameraAround({
+                    camera: {
+                        center: {
+                            lat: 37.8019,
+                            lng: -122.3974,
+                            altitude: 25
+                        },
+                        tilt: 60,
+                        range: 80
+                    },
+                    durationMillis: 8000,
+                    rounds: 1
+                });
+
+                // Wait for rotation to complete
+                await new Promise(resolve => {
+                    this.map.addEventListener('gmp-animationend', resolve, { once: true });
+                });
+
+                console.log('Completed cinematic rotation sequence');
+
+                // Return to front view
+                await this.map.flyCameraTo({
+                    endCamera: {
+                        center: { 
+                            lat: 37.8019,
+                            lng: -122.3974,
+                            altitude: 30
+                        },
+                        tilt: 60,
+                        heading: 85,
+                        range: 100
+                    },
+                    durationMillis: 2000
+                });
+
+            } catch (error) {
+                console.error('Error during cinematic rotation:', error);
+            }
+
+            // 4. Add pulsing effect to the dome
             const animateDome = () => {
                 const opacity = 0.4 + Math.sin(Date.now() / 1000) * 0.2;
                 dome.fillColor = `rgba(65, 105, 225, ${opacity})`;
                 requestAnimationFrame(animateDome);
             };
             animateDome();
-    
-            // 4. Show narration
+
+            // 5. Show narration
             await new Promise(resolve => setTimeout(resolve, 1000));
             if (window.NarrationSystem) {
                 await window.NarrationSystem.show(
@@ -773,15 +822,16 @@ const MapController = {
                     4000
                 );
             }
-    
+
+            // 6. Add interactivity
             dome.addEventListener('mouseover', () => {
                 dome.fillColor = "rgba(65, 105, 225, 0.8)";
             });
-    
+
             dome.addEventListener('mouseout', () => {
                 dome.fillColor = "rgba(65, 105, 225, 0.6)";
             });
-    
+
             dome.addEventListener('click', () => {
                 if (window.NavigationController) {
                     const domeInfo = LOCATIONS.EXPLORATORIUM.viewpoints.find(v => v.name === 'Tactile Dome');
@@ -792,9 +842,9 @@ const MapController = {
                     }
                 }
             });
-    
+
             return dome;
-    
+
         } catch (error) {
             console.error('Error in Tactile Dome showcase:', error);
             throw error;
