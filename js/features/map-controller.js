@@ -510,64 +510,78 @@ const MapController = {
     },
 
 
+    // File: js/features/map-controller.js
+
     async exploreExterior() {
-        console.log('Starting exterior exploration sequence');
+        console.log('Starting exterior exploration sequence with extreme aerial view');
         
         try {
             // Initialize glass wall effect
             await this.createGlassWallEffect();
-    
-            // Smooth approach to entrance
-            await this.map.flyCameraTo({
+
+            // Extreme aerial view
+            /*await this.map.flyCameraTo({
                 endCamera: {
                     center: { 
                         lat: 37.8019,
                         lng: -122.3975,
-                        altitude: 80
+                        altitude: 1000,    // Dramatically increased
+                        range: 15000      // Extremely large range for proper aerial view
                     },
-                    tilt: 75,
+                    tilt: 35,            // Much lower tilt for better aerial perspective
                     heading: 85,
-                    range: 150
                 },
                 durationMillis: 3000
+            });*/
+
+            console.log('Camera positioned at extreme aerial view', {
+                range: 15000,
+                tilt: 35,
+                altitude: 1000
             });
-    
-            // Add waterfront highlight
-            await this.highlightWaterfront();
-    
+
+            //await this.highlightWaterfront();
             return true;
         } catch (error) {
             console.error('Error in exterior exploration:', error);
             return false;
         }
     },
-    
+
     async createGlassWallEffect() {
-        console.log('Creating glass wall effect');
+        console.log('Creating extra large glass wall effect for aerial view');
         try {
             const { Polygon3DElement } = await google.maps.importLibrary("maps3d");
             
-            // Create glass wall polygon with correct properties
             const glassWall = new Polygon3DElement({
-                // Change from 'relative-to-ground' to 'RELATIVE_TO_GROUND'
                 altitudeMode: "RELATIVE_TO_GROUND",
-                fillColor: "rgba(255, 255, 255, 0.2)",
-                strokeColor: "#FFFFFF",
-                strokeWidth: 1,
+                fillColor: "rgba(255, 255, 255, 0.6)",  // Increased opacity for visibility
+                strokeColor: "#4285f4",                 // Changed to Google blue for better visibility
+                strokeWidth: 8,                         // Much thicker stroke
                 extruded: true
             });
-    
-            // Set coordinates using outerCoordinates property
+
             await customElements.whenDefined(glassWall.localName);
-            glassWall.outerCoordinates = [
-                { lat: 37.8018, lng: -122.3974, altitude: 30 },
-                { lat: 37.8019, lng: -122.3975, altitude: 30 },
-                { lat: 37.8020, lng: -122.3974, altitude: 30 },
-                { lat: 37.8019, lng: -122.3973, altitude: 30 },
-                { lat: 37.8018, lng: -122.3974, altitude: 30 }  // Close the polygon
+            
+            // Extra large glass structure for aerial visibility
+            const basePoint = {
+                lat: 37.8019,
+                lng: -122.3975
+            };
+            
+            const offset = 0.001;  // Much larger offset for visibility from high altitude
+            const coordinates = [
+                { lat: basePoint.lat - offset, lng: basePoint.lng - offset, altitude: 200 },
+                { lat: basePoint.lat + offset, lng: basePoint.lng - offset, altitude: 200 },
+                { lat: basePoint.lat + offset, lng: basePoint.lng + offset, altitude: 200 },
+                { lat: basePoint.lat - offset, lng: basePoint.lng + offset, altitude: 200 },
+                { lat: basePoint.lat - offset, lng: basePoint.lng - offset, altitude: 200 }
             ];
-    
-            console.log('Adding glass wall to map');
+
+            console.log('Setting extra large glass wall coordinates with offset:', offset);
+            glassWall.outerCoordinates = coordinates;
+
+            console.log('Adding extra large glass wall to map');
             this.map.append(glassWall);
             return glassWall;
             
@@ -576,7 +590,7 @@ const MapController = {
             return null;
         }
     },
-    
+
     async highlightWaterfront() {
         console.log('Highlighting waterfront view');
         try {
@@ -618,40 +632,6 @@ const MapController = {
         console.log('Starting simplified entry sequence');
         
         try {
-            // Step 1: Move to entrance position
-            console.log('Moving to entrance position');
-            await this.map.flyCameraTo({
-                endCamera: {
-                    center: { 
-                        lat: 37.8019,
-                        lng: -122.3975,
-                        altitude: 20
-                    },
-                    tilt: 65,
-                    heading: 85,
-                    range: 50
-                },
-                durationMillis: 2000
-            });
-    
-            await new Promise(resolve => setTimeout(resolve, 1000));
-    
-            // Step 2: Smooth transition inside
-            console.log('Transitioning inside');
-            await this.map.flyCameraTo({
-                endCamera: {
-                    center: { 
-                        lat: 37.8019,
-                        lng: -122.3974,
-                        altitude: 15
-                    },
-                    tilt: 60,
-                    heading: 90,
-                    range: 40
-                },
-                durationMillis: 2500
-            });
-    
             // Wait for camera movement to complete
             await new Promise(resolve => {
                 this.map.addEventListener('gmp-animationend', resolve, { once: true });
@@ -671,7 +651,7 @@ const MapController = {
             }
 
             // Wait for narration to complete
-            await new Promise(resolve => setTimeout(resolve, 4000));
+            await new Promise(resolve => setTimeout(resolve, 2000));
     
         } catch (error) {
             console.error('Error in entry sequence:', error);
