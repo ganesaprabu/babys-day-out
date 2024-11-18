@@ -151,6 +151,9 @@ const NavigationController = {
             item.addEventListener('click', async () => {
                 const destinationName = item.dataset.destination;
                 console.log(`Clicked destination: ${destinationName}`);
+
+                // First, remove any existing info panels
+                this.removeExistingInfoPanels();
                 
                 const destination = this.destinations.find(d => d.name === destinationName);
 
@@ -193,10 +196,25 @@ const NavigationController = {
         });
     },
 
+    removeExistingInfoPanels: function() {
+        console.log('Removing existing destination info panels');
+        const existingPanels = document.querySelectorAll('.destination-info-panel');
+        existingPanels.forEach(panel => {
+            panel.classList.add('closing');
+            setTimeout(() => {
+                if (panel && panel.parentNode) {
+                    panel.remove();
+                }
+            }, 300); // Match the closing animation duration
+        });
+    },
 
     showDestinationInfo: function(destination) {
         // Previous code remains the same until the event handlers...
     
+        // Remove any existing panels first
+        this.removeExistingInfoPanels();
+
         const infoPanel = document.createElement('div');
         infoPanel.className = 'destination-info-panel';
         
@@ -262,10 +280,5 @@ const NavigationController = {
         }
     },
 };
-
-// Initialize when DOM is loaded
-/*document.addEventListener('DOMContentLoaded', () => {
-    NavigationController.init();
-});*/
 
 window.NavigationController = NavigationController;
