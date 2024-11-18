@@ -223,7 +223,6 @@ const NavigationController = {
         <div class="info-header">
             <h3>${destination.marketingContent.title}</h3>
             <div class="header-buttons">
-                <button class="toggle-minimize" aria-label="Toggle panel"></button>
                 <button class="close-btn" aria-label="Close panel">×</button>
             </div>
         </div>
@@ -244,20 +243,12 @@ const NavigationController = {
         
         // Update event listeners
         const closeBtn = infoPanel.querySelector('.close-btn');
-        const toggleBtn = infoPanel.querySelector('.toggle-minimize');
         const header = infoPanel.querySelector('.info-header');
     
         closeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             infoPanel.classList.add('closing');
             setTimeout(() => infoPanel.remove(), 300);
-        });
-    
-        toggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            infoPanel.classList.toggle('minimized');
-            // Update arrow direction based on state
-            //toggleBtn.innerHTML = infoPanel.classList.contains('minimized') ? '▶' : '▼';
         });
     
         header.addEventListener('click', () => {
