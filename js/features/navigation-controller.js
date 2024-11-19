@@ -79,39 +79,28 @@ const NavigationController = {
     showIntroBubble: function() {
         const welcomeScreen = document.getElementById('welcomeScreen');
         if (!welcomeScreen.classList.contains('hidden')) return;
-        console.log('Creating intro bubble');
+        
+        console.log('Creating intro bubble with magical drone story');
         const bubble = document.createElement('div');
         bubble.className = 'intro-bubble';
         bubble.innerHTML = `
-            <span class="mappy-icon">🗺️✨</span>
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="assets/images/mappy_on_magical_drone.png" alt="Mappy on Magical Drone" 
+                    style="width: 200px; height: auto; border-radius: 10px;">
+            </div>
             <p class="mappy-message">
                 <span style="font-size: 1.2em; display: block; margin-bottom: 10px; color: #4285f4;">
-                    Hello, Adventurers! 
+                    Hello, Adventurers! ✨
                 </span>
-                Today's a super special day! 🎉 I'm Mappy, and I'm about to start the most amazing 
-                journey from my cozy home in San Francisco! We'll see the mighty Golden Gate Bridge 🌉, 
-                explore fun places, and make new friends along the way!
-                <br><br>
-                Are you ready to join my adventure? 🌟
+                Today's a super special day! 🎉 I've got my magical drone ready to take us on an 
+                amazing journey through San Francisco! We'll soar past the Golden Gate Bridge 🌉, 
+                glide through exciting places, and make wonderful discoveries together!
             </p>
-            <span class="mappy-signature">~ Mappy 🗺️</span>
+            <span class="mappy-signature">~ Mappy and my Magical Drone 🗺️ 🚁</span>
         `;
+        
         document.body.appendChild(bubble);
-        
-        // Add sound effect (optional - uncomment if you want to use it)
-        // const popSound = new Audio('assets/sounds/pop.mp3');
-        // popSound.play();
-        
         setTimeout(() => bubble.classList.add('active'), 100);
-        
-        // Add wiggle animation on hover
-        bubble.addEventListener('mouseover', () => {
-            bubble.style.transform = 'translateX(-50%) scale(1.02)';
-        });
-        
-        bubble.addEventListener('mouseout', () => {
-            bubble.style.transform = 'translateX(-50%) scale(1)';
-        });
     },
 
     hideIntroBubble: function() {
