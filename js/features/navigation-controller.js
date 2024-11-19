@@ -86,7 +86,7 @@ const NavigationController = {
         bubble.innerHTML = `
             <div style="text-align: center; margin-bottom: 15px;">
                 <img src="assets/images/mappy_on_magical_drone.png" alt="Mappy on Magical Drone" 
-                    style="width: 380px; height: auto; border-radius: 10px;">
+                    style="width: 360px; height: auto; border-radius: 10px;">
             </div>
             <p class="mappy-message">
                 <span style="font-size: 1.2em; display: block; margin-bottom: 10px; color: #4285f4;">
