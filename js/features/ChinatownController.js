@@ -30,23 +30,28 @@ class ChinatownController {
     }
 
     async setupLocation() {
-        console.log("Setting up initial camera position");
+        console.log("Setting up initial camera position for Chinatown overview");
         try {
-            const { center, camera } = this.location;
-            
+            // Modified camera position for better boundary visibility
             await new Promise(resolve => {
                 this.map.flyCameraTo({
                     endCamera: {
-                        center,
-                        tilt: camera.tilt,
-                        heading: camera.heading,
-                        range: camera.range
+                        center: {
+                            lat: 37.7941,
+                            lng: -122.4078,
+                            altitude: 0
+                        },
+                        tilt: 45,          // Reduced tilt for better overhead view
+                        heading: 45,
+                        range: 800         // Increased range to see more area
                     },
                     durationMillis: 2000
                 });
                 
                 this.map.addEventListener('gmp-animationend', resolve, { once: true });
             });
+            
+            console.log("Camera position set for boundary visibility");
         } catch (error) {
             console.error("Error setting up location:", error);
             throw error;
@@ -59,19 +64,50 @@ class ChinatownController {
             const { Polygon3DElement } = await google.maps.importLibrary("maps3d");
             
             this.boundaries = new Polygon3DElement({
-                altitudeMode: "RELATIVE_TO_GROUND", // Changed to uppercase
-                fillColor: "rgba(255, 0, 0, 0.1)",
+                altitudeMode: "RELATIVE_TO_GROUND",
+                fillColor: "rgba(255, 0, 0, 0)",
                 strokeColor: "#FF0000",
-                strokeWidth: 2
+                strokeWidth: 4  // Increased stroke width for better visibility
             });
     
             await customElements.whenDefined(this.boundaries.localName);
-            this.boundaries.outerCoordinates = this.location.boundaries.map(coord => ({
+            
+            const baseCoordinates = this.location.boundaries.map(coord => ({
                 ...coord,
-                altitude: 10
+                altitude: 0
             }));
             
+            this.boundaries.outerCoordinates = baseCoordinates;
             this.map.append(this.boundaries);
+
+            console.log("Pausing before animation");
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            console.log("Starting boundary animation");
+            let opacity = 0;
+            const steps = 60;
+            const interval = 33; // ~30fps
+            
+            for (let i = 0; i <= steps; i++) {
+                await new Promise(resolve => setTimeout(resolve, interval));
+                opacity += (0.15 / steps);  // Increased max opacity to 0.15
+                
+                this.boundaries.fillColor = `rgba(255, 0, 0, ${opacity})`;
+                
+                const altitudeProgress = i / steps;
+                const currentCoords = baseCoordinates.map(coord => ({
+                    ...coord,
+                    altitude: 50 * altitudeProgress  // Increased max altitude to 50
+                }));
+                this.boundaries.outerCoordinates = currentCoords;
+                
+                if (i % 10 === 0) {
+                    console.log(`Boundary animation progress: ${Math.round((i/steps) * 100)}%`);
+                }
+            }
+
+            console.log("Boundary animation completed");
+
         } catch (error) {
             console.error("Error creating boundaries:", error);
         }
