@@ -13,7 +13,24 @@ const NavigationController = {
             location: LOCATIONS.EXPLORATORIUM,
             marketingContent: LOCATIONS.EXPLORATORIUM.marketingContent
         },
-        { name: "Fisherman's Wharf", icon: '🦀' },
+        { 
+            name: "Fisherman's Wharf", 
+            icon: '🦀',
+            location: LOCATIONS.fishermansWharf,
+            marketingContent: {
+                title: "Fisherman's Wharf",
+                subtitle: "San Francisco's Famous Waterfront Destination",
+                description: "Experience the vibrant atmosphere of Fisherman's Wharf, where you can watch playful sea lions, explore unique shops, and enjoy fresh seafood!",
+                features: [
+                    "Famous Sea Lion Viewing Area",
+                    "Vibrant Shopping at Pier 39",
+                    "Interactive Sea Life Experiences",
+                    "Waterfront Dining Options"
+                ],
+                callToAction: "Start Exploring",
+                promoMessage: "Special seasonal events happening now!"
+            }
+        },
         { name: 'Chinatown', icon: '🏮' },
         { name: 'Golden Gate Park', icon: '🌳' }
     ],

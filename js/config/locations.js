@@ -138,7 +138,48 @@ const LOCATIONS = {
                 altitude: 50
             }
         ]
+    },
+    fishermansWharf: {
+        name: "Fisherman's Wharf",
+        center: {
+            lat: 37.80866,
+            lng: -122.41027,
+            altitude: 0
+        },
+        camera: {
+            tilt: 67.5,
+            heading: 45,
+            range: 800
+        },
+        pier39: {
+            center: {
+                lat: 37.80887,
+                lng: -122.41005,
+                altitude: 0
+            },
+            seaLionArea: {
+                coordinates: [
+                    { lat: 37.80904, lng: -122.41051 },
+                    { lat: 37.80898, lng: -122.41032 },
+                    { lat: 37.80879, lng: -122.41019 },
+                    { lat: 37.80869, lng: -122.41042 }
+                ]
+            },
+            markers: [
+                {
+                    position: { lat: 37.80887, lng: -122.41005 },
+                    title: "Sea Lions Viewing Area",
+                    icon: "sea-lion"
+                },
+                {
+                    position: { lat: 37.80892, lng: -122.41015 },
+                    title: "Pier 39 Shops",
+                    icon: "shopping"
+                }
+            ]
+        }
     }
+
 };
 
 // Update location categories

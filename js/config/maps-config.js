@@ -43,6 +43,8 @@ async function initMap() {
     return map;
 }
 
+// js/config/maps-config.js - Update the loadGoogleMapsAPI function
+
 function loadGoogleMapsAPI() {
     console.log('Loading Google Maps API with 3D support');
     
@@ -50,23 +52,27 @@ function loadGoogleMapsAPI() {
         try {
             (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
                 key: CONFIG.GOOGLE_MAPS.API_KEY,
-                v: "alpha"
+                v: "alpha",
+                libraries: ["maps3d", "marker", "places"],
+                region: "US"
             });
             
-            // Wait for the API to load
             const checkGoogleMaps = setInterval(() => {
                 if (window.google && window.google.maps) {
                     clearInterval(checkGoogleMaps);
+                    console.log('Google Maps API loaded successfully');
                     resolve();
                 }
             }, 100);
 
-            // Add timeout
+            // Add timeout for API load
             setTimeout(() => {
                 clearInterval(checkGoogleMaps);
                 reject(new Error('Google Maps API load timeout'));
             }, 10000);
+            
         } catch (error) {
+            console.error('Error loading Google Maps API:', error);
             reject(error);
         }
     });

@@ -61,7 +61,7 @@ const MapController = {
     moveToLocation: async function(location, duration = 2000) {
         console.log('moveToLocation called', {
             locationName: location.name || 'Unknown Location',
-            coordinates: `${location.lat},${location.lng}`,
+            location: location,
             initialized: this.initialized
         });
     
@@ -69,54 +69,73 @@ const MapController = {
             console.error('Map not properly initialized');
             return;
         }
-
+    
         try {
             console.log('Starting camera movement');
-
-            // Coordinates to outline the Golden Gate Bridge
-            const bridgeCoordinates = [
-                {lat: 37.80515638571346, lng: -122.4032569467164},
-                {lat: 37.80337073509504, lng: -122.4012878349353},
-                {lat: 37.79925208843463, lng: -122.3976697250461},
-                {lat: 37.7989102378512, lng: -122.3983408725656},
-                {lat: 37.79887832784348, lng: -122.3987094864192}
-            ];
-
+    
+            // Handle both location formats
+            const center = location.center ? location.center : {
+                lat: location.lat,
+                lng: location.lng,
+                altitude: location.altitude || 165
+            };
+    
+            const tilt = location.camera?.tilt || location.tilt || 65;
+            const heading = location.camera?.heading || location.heading || 25;
+            const range = location.camera?.range || location.range || 2500;
+    
+            console.log('Camera movement parameters:', {
+                center,
+                tilt,
+                heading,
+                range
+            });
+    
             // Move camera to location
             this.map.flyCameraTo({
                 endCamera: {
-                    center: { 
-                        lat: location.lat, 
-                        lng: location.lng,
-                        altitude: location.altitude || 165
-                    },
-                    tilt: location.tilt || 65,
-                    heading: location.heading || 25,
-                    range: location.range || 2500
+                    center,
+                    tilt,
+                    heading,
+                    range
                 },
                 durationMillis: duration
             });
-
+    
+            // Add path along bridge if it's the Golden Gate Bridge
+            if (location.name === 'Golden Gate Bridge') {
+                const bridgeCoordinates = [
+                    {lat: 37.80515638571346, lng: -122.4032569467164},
+                    {lat: 37.80337073509504, lng: -122.4012878349353},
+                    {lat: 37.79925208843463, lng: -122.3976697250461},
+                    {lat: 37.7989102378512, lng: -122.3983408725656},
+                    {lat: 37.79887832784348, lng: -122.3987094864192}
+                ];
+    
+                const polyline = document.querySelector('gmp-polyline-3d');
+                if (polyline) {
+                    await customElements.whenDefined(polyline.localName);
+                    polyline.coordinates = bridgeCoordinates;
+                    console.log('Bridge polyline added to map');
+                }
+            }
+    
             console.log('Camera movement started', {
                 duration,
-                target: `${location.lat},${location.lng}`
+                target: `${center.lat},${center.lng}`
             });
-
-            // Add path along bridge
-            const polyline = document.querySelector('gmp-polyline-3d');
-            if (polyline) {
-                await customElements.whenDefined(polyline.localName);
-                polyline.coordinates = bridgeCoordinates;
-                console.log('Polyline added to map');
-            }
-
-            // Listen for movement completion
-            this.map.addEventListener('gmp-animationend', () => {
-                console.log('Camera movement completed');
-            }, { once: true });
-
+    
+            // Return a promise that resolves when movement completes
+            return new Promise((resolve) => {
+                this.map.addEventListener('gmp-animationend', () => {
+                    console.log('Camera movement completed');
+                    resolve();
+                }, { once: true });
+            });
+    
         } catch (error) {
             console.error('Error moving to location:', error);
+            throw error;
         }
     },
 

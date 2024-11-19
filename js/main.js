@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const appContainer = document.getElementById('appContainer');
     const startJourneyBtn = document.getElementById('startJourneyBtn');
 
+    // Add variable for FishermansWharfController instance
+    let fishermansWharfController;
+
     startJourneyBtn.addEventListener('click', async () => {
         console.log('Starting journey...');
         
@@ -28,6 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     await MapController.init(window.BABY_APP.mapInstance);
                 }
             
+                // Initialize FishermansWharfController
+                console.log("Initializing Fisherman's Wharf Controller");
+                fishermansWharfController = new FishermansWharfController(window.BABY_APP.mapInstance);
+            
                 // Start with globe view sequence
                 await MapController.startGlobeToSFSequence();
             
@@ -40,6 +47,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Initialize the NavigationController
                 if (window.NavigationController) {
                     window.NavigationController.init();
+                    
+                    // Add event listener for Fisherman's Wharf navigation
+                    document.addEventListener('locationChange', async (event) => {
+                        if (event.detail.location === "Fisherman's Wharf") {
+                            console.log("Navigating to Fisherman's Wharf");
+                            try {
+                                await fishermansWharfController.initialize();
+                            } catch (error) {
+                                console.error("Error initializing Fisherman's Wharf:", error);
+                            }
+                        }
+                    });
                 }
             } catch (error) {
                 console.error('Error initializing overview:', error);
@@ -47,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     });
 
-    // Book cover animation handlers
+    // Rest of your existing book cover animation handlers remain the same
     const bookImage = document.querySelector('.book-cover img');
     if (bookImage) {
         bookImage.onload = () => {
