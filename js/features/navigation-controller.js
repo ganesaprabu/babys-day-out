@@ -251,6 +251,7 @@ const NavigationController = {
         <div class="info-header">
             <h3>${destination.marketingContent.title}</h3>
             <div class="header-buttons">
+                <button class="toggle-minimize" aria-label="Toggle panel">▼</button>
                 <button class="close-btn" aria-label="Close panel">×</button>
             </div>
         </div>
@@ -271,12 +272,19 @@ const NavigationController = {
         
         // Update event listeners
         const closeBtn = infoPanel.querySelector('.close-btn');
+        const toggleBtn = infoPanel.querySelector('.toggle-minimize');
         const header = infoPanel.querySelector('.info-header');
     
         closeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             infoPanel.classList.add('closing');
             setTimeout(() => infoPanel.remove(), 300);
+        });
+
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            infoPanel.classList.toggle('minimized');
+            toggleBtn.innerHTML = infoPanel.classList.contains('minimized') ? '▲' : '▼';
         });
     
         header.addEventListener('click', () => {
@@ -289,11 +297,12 @@ const NavigationController = {
         // Animation and auto-minimize
         setTimeout(() => infoPanel.classList.add('active'), 10);
     
-        if (destination.name === 'Exploratorium') {
+        if (destination.name === 'Exploratorium' || destination.name === 'Chinatown') {
             setTimeout(() => {
                 if (infoPanel && document.body.contains(infoPanel)) {
+                    console.log(`Auto-minimizing ${destination.name} info panel`);
                     infoPanel.classList.add('minimized');
-                    toggleBtn.innerHTML = '▶'; // Use right-facing triangle when minimized
+                    toggleBtn.innerHTML = '▲';  // Standardize to ▲/▼
                 }
             }, 5000);
         }
