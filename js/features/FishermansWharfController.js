@@ -1,6 +1,4 @@
-/**
- * Controller for Fisherman's Wharf location features
- */
+// js/features/FishermansWharfController.js
 class FishermansWharfController {
     constructor(map) {
         console.log("Initializing Fisherman's Wharf Controller");
@@ -18,7 +16,6 @@ class FishermansWharfController {
             await this.addMarkers();
             this.setupInteractions();
             
-            // Show welcome narration
             if (window.NarrationSystem) {
                 await window.NarrationSystem.show(
                     "Welcome to Fisherman's Wharf! 🦀 Watch the playful sea lions and explore Pier 39!",
@@ -28,7 +25,6 @@ class FishermansWharfController {
             }
         } catch (error) {
             console.error("Error initializing Fisherman's Wharf:", error);
-            // Show fallback message
             if (window.NarrationSystem) {
                 window.NarrationSystem.show(
                     "Having trouble loading Fisherman's Wharf. Please try refreshing the page.",
@@ -65,43 +61,68 @@ class FishermansWharfController {
         }
     }
 
+    // In js/features/FishermansWharfController.js
+
     async createSeaLionArea() {
         console.log("Creating sea lion viewing area");
-        const polygon = new google.maps.Polygon3DElement({
-            coordinates: this.location.pier39.seaLionArea.coordinates,
-            altitudeMode: "relative-to-ground",
-            fillColor: "rgba(30, 144, 255, 0.4)",
-            strokeColor: "#1E90FF",
-            strokeWidth: 2
-        });
-        
-        this.map.append(polygon);
-        this.seaLionArea = polygon;
+        try {
+            const { Polygon3DElement } = await google.maps.importLibrary("maps3d");
+            
+            // Create a basic polygon first
+            const polygon = new Polygon3DElement();
+            await customElements.whenDefined(polygon.localName);
+
+            // Set properties individually
+            polygon.altitudeMode = "RELATIVE_TO_GROUND";
+            polygon.fillColor = "rgba(30, 144, 255, 0.4)";
+            polygon.strokeColor = "#1E90FF";
+            polygon.strokeWidth = 2;
+
+            // Set coordinates last
+            polygon.outerCoordinates = this.location.pier39.seaLionArea.coordinates.map(coord => ({
+                ...coord,
+                altitude: 5 // Add some height for visibility
+            }));
+
+            this.map.append(polygon);
+            this.seaLionArea = polygon;
+            
+            console.log("Sea lion area created successfully");
+        } catch (error) {
+            console.error("Error creating sea lion area:", error);
+            throw error;
+        }
     }
 
     async addMarkers() {
         console.log("Adding location markers");
-        const { PinElement } = await google.maps.importLibrary("marker");
+        try {
+            const { Marker3DElement } = await google.maps.importLibrary("maps3d");
+            const { PinElement } = await google.maps.importLibrary("marker");
 
-        for (const markerInfo of this.location.pier39.markers) {
-            const pinElement = new PinElement({
-                background: "#4285F4",
-                borderColor: "#2C5EA9",
-                glyphColor: "white",
-                scale: 1.2
-            });
+            for (const markerInfo of this.location.pier39.markers) {
+                const pinElement = new PinElement({
+                    background: "#4285F4",
+                    borderColor: "#2C5EA9",
+                    glyphColor: "white",
+                    scale: 1.2
+                });
 
-            const marker = new google.maps.Marker3DElement({
-                position: markerInfo.position,
-                title: markerInfo.title,
-                collisionBehavior: google.maps.CollisionBehavior.OPTIONAL_AND_HIDES_LOWER_PRIORITY
-            });
+                const marker = new Marker3DElement({
+                    position: markerInfo.position,
+                    title: markerInfo.title,
+                    collisionBehavior: google.maps.CollisionBehavior.OPTIONAL_AND_HIDES_LOWER_PRIORITY
+                });
 
-            marker.append(pinElement);
-            this.map.append(marker);
-            this.markers.push(marker);
+                marker.append(pinElement);
+                this.map.append(marker);
+                this.markers.push(marker);
 
-            console.log(`Added marker: ${markerInfo.title}`);
+                console.log(`Added marker: ${markerInfo.title}`);
+            }
+        } catch (error) {
+            console.error("Error adding markers:", error);
+            throw error;
         }
     }
 
@@ -110,14 +131,12 @@ class FishermansWharfController {
         this.markers.forEach(marker => {
             marker.addEventListener('click', (event) => {
                 console.log(`Marker clicked: ${event.target.title}`);
-                // Show info window or trigger animation
                 this.showLocationInfo(event.target);
             });
         });
     }
 
     showLocationInfo(marker) {
-        // Simple info window for now
         const info = document.createElement('div');
         info.innerHTML = `
             <div style="padding: 10px;">
@@ -125,8 +144,8 @@ class FishermansWharfController {
                 <p>Click to learn more about this location!</p>
             </div>
         `;
-        
-        // Add to map
         marker.append(info);
     }
 }
+
+window.FishermansWharfController = FishermansWharfController;

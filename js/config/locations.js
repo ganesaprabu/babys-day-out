@@ -178,6 +178,69 @@ const LOCATIONS = {
                 }
             ]
         }
+    },
+    CHINATOWN: {
+        name: "Chinatown",
+        center: {
+            lat: 37.7941,
+            lng: -122.4078,
+            altitude: 0
+        },
+        camera: {
+            tilt: 60,
+            heading: 45,
+            range: 400
+        },
+        marketingContent: {
+            title: "San Francisco Chinatown",
+            subtitle: "The Largest Chinatown Outside of Asia",
+            description: "Immerse yourself in the vibrant culture and rich history of San Francisco's Chinatown. Explore authentic markets, temples, and the famous Fortune Cookie Factory!",
+            features: [
+                "Historic Dragon's Gate",
+                "Golden Gate Fortune Cookie Factory",
+                "Traditional Markets & Shops",
+                "Authentic Cultural Experience"
+            ],
+            promoMessage: "Special cultural events happening now!",
+            callToAction: "Start Your Cultural Journey"
+        },
+        landmarks: [
+            {
+                name: "Dragon's Gate",
+                position: { lat: 37.7905, lng: -122.4058 },
+                type: "gate",
+                marketingContent: {
+                    title: "Dragon's Gate",
+                    description: "The iconic entrance to Chinatown"
+                }
+            },
+            {
+                name: "Fortune Cookie Factory",
+                position: { lat: 37.7938, lng: -122.4071 },
+                type: "attraction",
+                marketingContent: {
+                    title: "Golden Gate Fortune Cookie Factory",
+                    description: "Watch fortune cookies being made by hand!",
+                    promoMessage: "Free samples available!"
+                }
+            },
+            {
+                name: "Grant Avenue",
+                position: { lat: 37.7927, lng: -122.4065 },
+                type: "shopping",
+                marketingContent: {
+                    title: "Grant Avenue Shopping",
+                    description: "Experience traditional shops and markets",
+                    promoMessage: "Special discounts at participating stores!"
+                }
+            }
+        ],
+        boundaries: [
+            { lat: 37.7964, lng: -122.4099 },
+            { lat: 37.7964, lng: -122.4056 },
+            { lat: 37.7916, lng: -122.4056 },
+            { lat: 37.7916, lng: -122.4099 }
+        ]
     }
 
 };

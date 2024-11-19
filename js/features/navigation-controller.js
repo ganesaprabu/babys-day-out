@@ -31,7 +31,12 @@ const NavigationController = {
                 promoMessage: "Special seasonal events happening now!"
             }
         },
-        { name: 'Chinatown', icon: '🏮' },
+        { 
+            name: 'Chinatown', 
+            icon: '🏮',
+            location: LOCATIONS.CHINATOWN,
+            marketingContent: LOCATIONS.CHINATOWN.marketingContent
+        },
         { name: 'Golden Gate Park', icon: '🌳' }
     ],
 
@@ -198,6 +203,12 @@ const NavigationController = {
                             await MapController.enhancedBridgeView(destination.location);
                         } else if (destination.name === 'Exploratorium') {
                             await MapController.exploreExploratorium(destination.location);
+                        } else if (destinationName === 'Chinatown') {
+                            const chinatownController = new ChinatownController(window.BABY_APP.mapInstance);
+                            await chinatownController.initialize();
+                        } else if (destinationName === "Fisherman's Wharf") {
+                            const fishermansWharfController = new FishermansWharfController(window.BABY_APP.mapInstance);
+                            await fishermansWharfController.initialize();
                         }
                         
                         this.showDestinationInfo(destination);
