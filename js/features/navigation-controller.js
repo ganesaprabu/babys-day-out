@@ -286,15 +286,14 @@ const NavigationController = {
         // Animation and auto-minimize
         setTimeout(() => infoPanel.classList.add('active'), 10);
     
-        if (destination.name === 'Exploratorium' || destination.name === 'Chinatown') {
-            setTimeout(() => {
-                if (infoPanel && document.body.contains(infoPanel)) {
-                    console.log(`Auto-minimizing ${destination.name} info panel`);
-                    infoPanel.classList.add('minimized');
-                    toggleBtn.innerHTML = '▲';  // Standardize to ▲/▼
-                }
-            }, 5000);
-        }
+        // Auto-minimize all destination info panels after 3 seconds
+        setTimeout(() => {
+            if (infoPanel && document.body.contains(infoPanel)) {
+                console.log(`Auto-minimizing ${destination.name} info panel`);
+                infoPanel.classList.add('minimized');
+                toggleBtn.innerHTML = '▲';
+            }
+        }, 2000); // Reduced from 5000ms to 3000ms
     },
 };
 
