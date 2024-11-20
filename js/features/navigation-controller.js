@@ -230,6 +230,39 @@ const NavigationController = {
                     if (navigationPanel) {
                         navigationPanel.classList.remove('active'); // This will hide the right panel
                     }
+
+
+                    // Create and show Seven Wonders intro bubble
+                    const bubble = document.createElement('div');
+                    bubble.className = 'intro-bubble';
+                    bubble.innerHTML = `
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <img src="assets/images/mappy_7_wonders.png" alt="Mappy on World Tour" 
+                                style="width: 360px; height: auto; border-radius: 10px;">
+                        </div>
+                        <p class="mappy-message">
+                            <span style="font-size: 1.2em; display: block; margin-bottom: 10px; color: #4285f4;">
+                                Time for a Global Adventure! ✨
+                            </span>
+                            Mappy's magical drone is ready for discovering the wonders of the world! 
+                            Let's embark on an incredible journey to explore these magnificent monuments together! 🌎
+                        </p>
+                        <span class="mappy-signature">~ Mappy and my World-Traveling Drone 🗺️ 🚁</span>
+                    `;
+                    
+                    document.body.appendChild(bubble);
+                    setTimeout(() => bubble.classList.add('active'), 100);
+
+                    // Show bubble for 5 seconds then proceed with the journey
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    
+                    // Remove bubble with fade out effect
+                    bubble.classList.remove('active');
+                    setTimeout(() => bubble.remove(), 500);
+
+                    
+
+                    
                     // Remove active state from other destinations
                     items.forEach(i => i.classList.remove('active'));
     
