@@ -5,6 +5,7 @@ class ColosseumController {
         console.log("Initializing Colosseum Controller");
         this.map = map;
         this.markers = [];
+        this.path = null;
         this.location = {
             center: {
                 lat: 41.890210,
@@ -17,6 +18,12 @@ class ColosseumController {
                 range: 400
             }
         };
+        this.pathCoordinates = [
+            { lat: 41.890210, lng: 12.492231 }, // Colosseum
+            { lat: 41.892151, lng: 12.485333 }, // Roman Forum
+            { lat: 41.889157, lng: 12.487482 }, // Palatine Hill
+            { lat: 41.889817, lng: 12.490725 }  // Arch of Constantine
+        ];
         this.currentView = 'modern';
     }
 
@@ -26,6 +33,7 @@ class ColosseumController {
             // Initial view setup
             await this.setupLocation();
             await this.createViewpoints();
+            await this.createAnimatedPath();
             
             // Show welcome narration
             if (window.NarrationSystem) {
@@ -87,6 +95,96 @@ class ColosseumController {
             throw error;
         }
     }
+
+    async createAnimatedPath() {
+        console.log("Creating animated path along road");
+        try {
+            const { Polyline3DElement } = await google.maps.importLibrary("maps3d");
+            
+            const basePath = new Polyline3DElement({
+                altitudeMode: "RELATIVE_TO_GROUND",
+                strokeColor: "#666666",
+                strokeWidth: 8
+            });
+    
+            const highlightSegment = new Polyline3DElement({
+                altitudeMode: "RELATIVE_TO_GROUND",
+                strokeColor: "#FFA500",
+                strokeWidth: 8
+            });
+    
+            await customElements.whenDefined(basePath.localName);
+            await customElements.whenDefined(highlightSegment.localName);
+    
+            basePath.coordinates = this.pathCoordinates;
+            this.map.append(basePath);
+    
+            this.animateSegment(highlightSegment, this.pathCoordinates);
+            this.map.append(highlightSegment);
+            
+            this.path = [basePath, highlightSegment];
+    
+        } catch (error) {
+            console.error("Error creating animated path:", error);
+        }
+    }
+
+    animateSegment(segment, roadCoordinates) {
+        const segmentLength = 0.001;
+        let progress = 0;
+    
+        const animate = () => {
+            if (progress >= 1) {
+                progress = 0;
+            }
+    
+            const currentIndex = Math.floor(progress * (roadCoordinates.length - 1));
+            const nextIndex = Math.min(currentIndex + 1, roadCoordinates.length - 1);
+            
+            const current = roadCoordinates[currentIndex];
+            const next = roadCoordinates[nextIndex];
+            
+            const segmentStart = {
+                lat: current.lat + (next.lat - current.lat) * (progress % (1 / (roadCoordinates.length - 1))),
+                lng: current.lng + (next.lng - current.lng) * (progress % (1 / (roadCoordinates.length - 1)))
+            };
+    
+            const segmentEnd = {
+                lat: segmentStart.lat + (next.lat - current.lat) * segmentLength,
+                lng: segmentStart.lng + (next.lng - current.lng) * segmentLength
+            };
+    
+            segment.coordinates = [segmentStart, segmentEnd];
+            
+            progress += 0.002;
+            requestAnimationFrame(animate);
+        };
+    
+        animate();
+    }
+
+    animatePath() {
+        let opacity = 0.8;
+        let increasing = false;
+
+        const animate = () => {
+            if (this.path) {
+                if (increasing) {
+                    opacity += 0.02;
+                    if (opacity >= 0.8) increasing = false;
+                } else {
+                    opacity -= 0.02;
+                    if (opacity <= 0.4) increasing = true;
+                }
+                
+                this.path.strokeColor = `rgba(255, 215, 0, ${opacity})`;
+                requestAnimationFrame(animate);
+            }
+        };
+
+        animate();
+    }
+
 
     async createViewpoints() {
         console.log("Creating viewpoint markers");
@@ -251,6 +349,13 @@ class ColosseumController {
     cleanup() {
         console.log("Cleaning up Colosseum controller");
         this.markers.forEach(marker => marker.remove());
+        if (Array.isArray(this.path)) {
+            this.path.forEach(pathElement => {
+                if (pathElement && pathElement.parentElement) {
+                    pathElement.remove();
+                }
+            });
+        }
     }
 }
 
