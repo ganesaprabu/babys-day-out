@@ -36,8 +36,7 @@ const NavigationController = {
             icon: '🏮',
             location: LOCATIONS.CHINATOWN,
             marketingContent: LOCATIONS.CHINATOWN.marketingContent
-        },
-        { name: 'Golden Gate Park', icon: '🌳' }
+        }
     ],
 
     // js/features/navigation-controller.js
