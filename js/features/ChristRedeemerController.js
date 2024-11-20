@@ -10,12 +10,12 @@ class ChristRedeemerController {
             center: {
                 lat: -22.951916,
                 lng: -43.210487,
-                altitude: 0
+                altitude: 700  // Increased from 0
             },
             camera: {
-                tilt: 60,
+                tilt: 45,     // Reduced from 60 for better aerial view
                 heading: 45,
-                range: 1000
+                range: 1200   // Increased from 1000
             }
         };
     }
@@ -116,38 +116,38 @@ class ChristRedeemerController {
     async executeCinematicSequence() {
         console.log("Starting cinematic sequence");
         try {
-            // Front view
+            // Front view - closer and centered
             await this.map.flyCameraTo({
                 endCamera: {
                     center: {
                         lat: -22.951916,
                         lng: -43.210487,
-                        altitude: 0
+                        altitude: 700
                     },
-                    tilt: 45,
+                    tilt: 35,
                     heading: 0,
-                    range: 500
+                    range: 400  // Reduced from 800 for closer view
                 },
                 durationMillis: 3000
             });
-
+    
             await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Side view with rotation
+    
+            // Closer circular view
             await this.map.flyCameraAround({
                 camera: {
                     center: {
                         lat: -22.951916,
                         lng: -43.210487,
-                        altitude: 0
+                        altitude: 700
                     },
-                    tilt: 60,
-                    range: 400
+                    tilt: 45,
+                    range: 300  // Reduced from 600 for tighter view
                 },
                 durationMillis: 8000,
                 rounds: 1
             });
-
+    
         } catch (error) {
             console.error("Error in cinematic sequence:", error);
         }
@@ -168,10 +168,13 @@ class ChristRedeemerController {
         try {
             await this.map.flyCameraTo({
                 endCamera: {
-                    center: marker.position,
-                    tilt: 45,
+                    center: {
+                        ...marker.position,
+                        altitude: 700  // Maintain consistent altitude
+                    },
+                    tilt: 35,
                     heading: marker.title === "Front View" ? 0 : 90,
-                    range: 300
+                    range: 500
                 },
                 durationMillis: 2000
             });
