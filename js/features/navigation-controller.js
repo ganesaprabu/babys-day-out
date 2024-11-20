@@ -288,6 +288,11 @@ const NavigationController = {
                     console.log('Moving to Seven Wonders initial location');
                     await MapController.moveToLocation(LOCATIONS.SEVEN_WONDERS);
                     
+                    // Initialize Taj Mahal experience
+                    console.log('Starting Taj Mahal experience');
+                    const tajMahalController = new TajMahalController(window.BABY_APP.mapInstance);
+                    await tajMahalController.initialize();
+                    
                     // Show destination info
                     console.log('Showing Seven Wonders destination info');
                     this.showDestinationInfo({

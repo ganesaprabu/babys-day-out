@@ -1,0 +1,89 @@
+// js/features/TajMahalController.js
+
+class TajMahalController {
+    constructor(map) {
+        console.log("Initializing Taj Mahal Controller");
+        this.map = map;
+        this.location = LOCATIONS.SEVEN_WONDERS.wonders.find(w => w.name === "Taj Mahal");
+    }
+
+    async initialize() {
+        console.log("Setting up Taj Mahal overview experience");
+        try {
+            if (window.NarrationSystem) {
+                await window.NarrationSystem.show(
+                    "Welcome to the Taj Mahal! 🏰 One of the world's most beautiful monuments...",
+                    "",
+                    4000
+                );
+            }
+            await this.executeSimpleSequence();
+        } catch (error) {
+            console.error("Error initializing Taj Mahal experience:", error);
+        }
+    }
+
+    async executeSimpleSequence() {
+        console.log("Starting Taj Mahal simple overview sequence");
+        try {
+            // Initial aerial view
+            await this.moveCamera({
+                center: {
+                    lat: 27.175015,
+                    lng: 78.042155,
+                    altitude: 300
+                },
+                tilt: 0,  // Top-down view
+                heading: 0,
+                range: 1000
+            }, 3000);
+            
+            await this.pause(2000);
+
+            // Slightly closer view
+            await this.moveCamera({
+                center: {
+                    lat: 27.175015,
+                    lng: 78.042155,
+                    altitude: 200
+                },
+                tilt: 0,  // Keeping top-down view
+                heading: 0,
+                range: 800
+            }, 3000);
+
+            if (window.NarrationSystem) {
+                await window.NarrationSystem.show(
+                    "Admire this architectural masterpiece from above! ✨",
+                    "",
+                    4000
+                );
+            }
+
+        } catch (error) {
+            console.error("Error in Taj Mahal sequence:", error);
+        }
+    }
+
+    async moveCamera(endCamera, duration) {
+        console.log("Moving camera to:", endCamera);
+        return new Promise((resolve) => {
+            this.map.flyCameraTo({
+                endCamera,
+                durationMillis: duration
+            });
+            this.map.addEventListener('gmp-animationend', resolve, { once: true });
+        });
+    }
+
+    async pause(duration) {
+        console.log(`Pausing for ${duration}ms`);
+        return new Promise(resolve => setTimeout(resolve, duration));
+    }
+
+    cleanup() {
+        console.log("Cleaning up Taj Mahal controller");
+    }
+}
+
+window.TajMahalController = TajMahalController;
