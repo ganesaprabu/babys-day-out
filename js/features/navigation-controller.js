@@ -261,8 +261,69 @@ const NavigationController = {
                     setTimeout(() => bubble.remove(), 500);
 
                     
+                    // Create and show the wonders navigation panel
+                    const navPanel = document.createElement('div');
+                    navPanel.className = 'seven-wonders-nav';
+                    navPanel.innerHTML = `
+                        <button class="wonder-nav-btn prev-wonder" aria-label="Previous wonder">
+                            <span>◀</span>
+                        </button>
+                        <div class="wonder-name">Taj Mahal</div>
+                        <button class="wonder-nav-btn next-wonder" aria-label="Next wonder">
+                            <span>▶</span>
+                        </button>
+                    `;
+                    document.body.appendChild(navPanel);
 
+                    // Show with animation
+                    setTimeout(() => navPanel.classList.add('visible'), 100);
+
+                    // Set up navigation between wonders
+                    this.currentWonderIndex = 0;
+                    const wondersList = [
+                        {
+                            name: "Taj Mahal",
+                            location: LOCATIONS.SEVEN_WONDERS.wonders.find(w => w.name === "Taj Mahal").location,
+                            controller: TajMahalController
+                        },
+                        {
+                            name: "Christ the Redeemer",
+                            location: {
+                                lat: -22.951916,
+                                lng: -43.210487,
+                                altitude: 0,
+                                camera: {
+                                    tilt: 60,
+                                    heading: 45,
+                                    range: 1000
+                                }
+                            },
+                            controller: ChristRedeemerController
+                        },
+                        {
+                            name: "Colosseum",
+                            location: {
+                                center: {
+                                    lat: 41.890210,
+                                    lng: 12.492231,
+                                    altitude: 0
+                                },
+                                camera: {
+                                    tilt: 60,
+                                    heading: 0,
+                                    range: 800
+                                }
+                            }
+                        }
+                    ];
                     
+                    // Show with animation
+                    setTimeout(() => navPanel.classList.add('visible'), 100);
+
+                    // Set up navigation handlers
+                    navPanel.querySelector('.prev-wonder').addEventListener('click', () => this.navigatePreviousWonder());
+                    navPanel.querySelector('.next-wonder').addEventListener('click', () => this.navigateNextWonder());
+
                     // Remove active state from other destinations
                     items.forEach(i => i.classList.remove('active'));
     
@@ -299,6 +360,31 @@ const NavigationController = {
                         marketingContent: LOCATIONS.SEVEN_WONDERS.marketingContent
                     });
                     
+                    let currentWonderIndex = 0;
+
+                    const updateWonderDisplay = async () => {
+                        const wonderNameElement = navPanel.querySelector('.wonder-name');
+                        wonderNameElement.textContent = wondersList[currentWonderIndex].name;
+                        
+                        // Initialize appropriate controller based on wonder
+                        if (wondersList[currentWonderIndex].name === "Christ the Redeemer") {
+                            const christRedeemerController = new ChristRedeemerController(window.BABY_APP.mapInstance);
+                            await christRedeemerController.initialize();
+                        }
+                        // Add other wonders' controllers as needed
+                    };
+
+                    navPanel.querySelector('.prev-wonder').addEventListener('click', async () => {
+                        currentWonderIndex = (currentWonderIndex - 1 + wondersList.length) % wondersList.length;
+                        await updateWonderDisplay();
+                    });
+
+                    navPanel.querySelector('.next-wonder').addEventListener('click', async () => {
+                        currentWonderIndex = (currentWonderIndex + 1) % wondersList.length;
+                        await updateWonderDisplay();
+                    });
+
+
                 } catch (error) {
                     console.error('Error starting Seven Wonders journey:', error);
                     alert('Sorry, we encountered an error starting the Seven Wonders journey. Please try again.');
@@ -364,6 +450,7 @@ const NavigationController = {
             e.stopPropagation();
             infoPanel.classList.add('closing');
             setTimeout(() => infoPanel.remove(), 300);
+            cleanupSevenWonders(); // Add this line
         });
 
         toggleBtn.addEventListener('click', (e) => {
@@ -391,6 +478,45 @@ const NavigationController = {
             }
         }, 2000); // Reduced from 5000ms to 3000ms
     },
+
+    cleanupSevenWonders: function() {
+        DEBUG.log('Cleaning up Seven Wonders navigation');
+        const navPanel = document.querySelector('.seven-wonders-nav');
+        if (navPanel) {
+            navPanel.classList.remove('visible');
+            setTimeout(() => navPanel.remove(), 300);
+        }
+    },
+
+    navigatePreviousWonder: function() {
+        DEBUG.log('Navigating to previous wonder');
+        this.currentWonderIndex = (this.currentWonderIndex - 1 + this.wondersList.length) % this.wondersList.length;
+        this.updateWonderDisplay();
+    },
+    
+    navigateNextWonder: function() {
+        DEBUG.log('Navigating to next wonder');
+        this.currentWonderIndex = (this.currentWonderIndex + 1) % this.wondersList.length;
+        this.updateWonderDisplay();
+    },
+
+    updateWonderDisplay: async function() {
+        DEBUG.log('Updating wonder display');
+        const navPanel = document.querySelector('.seven-wonders-nav');
+        if (!navPanel) return;
+    
+        const wonderNameElement = navPanel.querySelector('.wonder-name');
+        const currentWonder = this.wondersList[this.currentWonderIndex];
+        wonderNameElement.textContent = currentWonder.name;
+        
+        // Initialize appropriate controller based on wonder
+        if (currentWonder.name === "Christ the Redeemer") {
+            const christRedeemerController = new ChristRedeemerController(window.BABY_APP.mapInstance);
+            await christRedeemerController.initialize();
+        }
+    },
+
+    
 };
 
 window.NavigationController = NavigationController;

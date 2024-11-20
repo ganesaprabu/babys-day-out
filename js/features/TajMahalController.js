@@ -10,13 +10,16 @@ class TajMahalController {
     async initialize() {
         console.log("Setting up Taj Mahal overview experience");
         try {
+            // Move narration to start of sequence
             if (window.NarrationSystem) {
-                await window.NarrationSystem.show(
+                window.NarrationSystem.show(
                     "Welcome to the Taj Mahal! 🏰 One of the world's most beautiful monuments...",
                     "",
                     4000
                 );
             }
+
+            // Chain promises to ensure sequence
             await this.executeSimpleSequence();
         } catch (error) {
             console.error("Error initializing Taj Mahal experience:", error);
@@ -52,12 +55,18 @@ class TajMahalController {
                 range: 800
             }, 3000);
 
-            if (window.NarrationSystem) {
-                await window.NarrationSystem.show(
-                    "Admire this architectural masterpiece from above! ✨",
-                    "",
-                    4000
-                );
+            // Show narration immediately after camera move completes
+            await window.NarrationSystem.show(
+                "Admire this architectural masterpiece from above! ✨",
+                "",
+                4000
+            );
+
+            // Show marketing info immediately
+            if (window.NavigationController) {
+                window.NavigationController.showDestinationInfo({
+                    marketingContent: LOCATIONS.SEVEN_WONDERS.marketingContent
+                });
             }
 
         } catch (error) {
@@ -65,15 +74,32 @@ class TajMahalController {
         }
     }
 
+    // In TajMahalController.js
     async moveCamera(endCamera, duration) {
         console.log("Moving camera to:", endCamera);
-        return new Promise((resolve) => {
-            this.map.flyCameraTo({
-                endCamera,
-                durationMillis: duration
-            });
-            this.map.addEventListener('gmp-animationend', resolve, { once: true });
-        });
+        try {
+            // Use the Promise.race to handle both animation completion and timeout
+            await Promise.race([
+                new Promise((resolve) => {
+                    const animation = this.map.flyCameraTo({
+                        endCamera,
+                        durationMillis: duration
+                    });
+                    
+                    // Use the animation promise instead of event listener
+                    animation.then(() => {
+                        console.log('Camera movement completed via promise');
+                        resolve();
+                    });
+                }),
+                // Add a safety timeout
+                new Promise(resolve => setTimeout(resolve, duration + 500))
+            ]);
+            
+            console.log('Camera movement and safety timeout completed');
+        } catch (error) {
+            console.error('Error during camera movement:', error);
+        }
     }
 
     async pause(duration) {
