@@ -64,6 +64,21 @@ const NavigationController = {
             controllerName: 'ChristRedeemerController'
         },
         {
+            name: "Colosseum",
+            location: {
+                lat: 41.890210,
+                lng: 12.492231,
+                altitude: 0,
+                camera: {
+                    tilt: 60,
+                    heading: 0,
+                    range: 800
+                }
+            },
+            controller: null,  // Will be set dynamically when needed
+            controllerName: 'ColosseumController'
+        },
+        {
             name: "Great Wall of China",
             location: {
                 lat: 40.4319,
@@ -102,19 +117,6 @@ const NavigationController = {
                 }
             }
         },
-        {
-            name: "Colosseum",
-            location: {
-                lat: 41.890210,
-                lng: 12.492231,
-                altitude: 0,
-                camera: {
-                    tilt: 60,
-                    heading: 0,
-                    range: 800
-                }
-            }
-        }
     ],
     currentWonderIndex: 0,
 
