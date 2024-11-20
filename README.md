@@ -50,5 +50,4 @@ babys-day-out/
 [Your chosen license]
 
 ## How to RUN
-python3 -m http.server 8080
-Hit this URL in the browser -> http://localhost:8080
+[Setup Guide](setup-guide.md)
