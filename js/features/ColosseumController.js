@@ -1,4 +1,4 @@
-// js/features/ColosseumController.js
+
 
 class ColosseumController {
     constructor(map) {

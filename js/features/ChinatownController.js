@@ -1,4 +1,4 @@
-// js/features/ChinatownController.js
+
 
 class ChinatownController {
     constructor(map) {
@@ -32,7 +32,7 @@ class ChinatownController {
     async setupLocation() {
         console.log("Setting up initial camera position for Chinatown overview");
         try {
-            // Modified camera position for better boundary visibility
+            
             await new Promise(resolve => {
                 this.map.flyCameraTo({
                     endCamera: {
@@ -41,9 +41,9 @@ class ChinatownController {
                             lng: -122.4078,
                             altitude: 0
                         },
-                        tilt: 45,          // Reduced tilt for better overhead view
+                        tilt: 45,          
                         heading: 45,
-                        range: 800         // Increased range to see more area
+                        range: 800         
                     },
                     durationMillis: 2000
                 });
@@ -67,7 +67,7 @@ class ChinatownController {
                 altitudeMode: "RELATIVE_TO_GROUND",
                 fillColor: "rgba(255, 0, 0, 0)",
                 strokeColor: "#FF0000",
-                strokeWidth: 4  // Increased stroke width for better visibility
+                strokeWidth: 4  
             });
     
             await customElements.whenDefined(this.boundaries.localName);
@@ -90,14 +90,14 @@ class ChinatownController {
             
             for (let i = 0; i <= steps; i++) {
                 await new Promise(resolve => setTimeout(resolve, interval));
-                opacity += (0.15 / steps);  // Increased max opacity to 0.15
+                opacity += (0.15 / steps);  
                 
                 this.boundaries.fillColor = `rgba(255, 0, 0, ${opacity})`;
                 
                 const altitudeProgress = i / steps;
                 const currentCoords = baseCoordinates.map(coord => ({
                     ...coord,
-                    altitude: 50 * altitudeProgress  // Increased max altitude to 50
+                    altitude: 50 * altitudeProgress  
                 }));
                 this.boundaries.outerCoordinates = currentCoords;
                 

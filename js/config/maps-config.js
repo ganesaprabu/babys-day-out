@@ -43,7 +43,7 @@ async function initMap() {
     return map;
 }
 
-// js/config/maps-config.js - Update the loadGoogleMapsAPI function
+
 
 function loadGoogleMapsAPI() {
     console.log('Loading Google Maps API with 3D support');

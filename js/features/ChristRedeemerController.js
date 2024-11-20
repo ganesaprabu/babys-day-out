@@ -1,4 +1,4 @@
-// js/features/ChristRedeemerController.js
+
 
 class ChristRedeemerController {
     constructor(map) {
@@ -10,12 +10,12 @@ class ChristRedeemerController {
             center: {
                 lat: -22.951916,
                 lng: -43.210487,
-                altitude: 700  // Increased from 0
+                altitude: 700  
             },
             camera: {
-                tilt: 45,     // Reduced from 60 for better aerial view
+                tilt: 45,     
                 heading: 45,
-                range: 1200   // Increased from 1000
+                range: 1200   
             }
         };
     }
@@ -126,7 +126,7 @@ class ChristRedeemerController {
                     },
                     tilt: 35,
                     heading: 0,
-                    range: 400  // Reduced from 800 for closer view
+                    range: 400  
                 },
                 durationMillis: 3000
             });
@@ -142,7 +142,7 @@ class ChristRedeemerController {
                         altitude: 700
                     },
                     tilt: 45,
-                    range: 300  // Reduced from 600 for tighter view
+                    range: 300  
                 },
                 durationMillis: 8000,
                 rounds: 1
