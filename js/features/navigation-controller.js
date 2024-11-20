@@ -149,6 +149,11 @@ const NavigationController = {
                     </li>
                 `).join('')}
             </ul>
+            <div class="action-buttons">
+                <button id="sevenWondersBtn" class="special-action-btn">
+                    SEVEN WONDERS TOUR
+                </button>
+            </div>
         `;
     },
 
@@ -157,16 +162,17 @@ const NavigationController = {
     attachEventListeners: function() {
         console.log('Attaching navigation event listeners');
         const items = document.querySelectorAll('.destination-item');
+        
         items.forEach(item => {
             item.addEventListener('click', async () => {
                 const destinationName = item.dataset.destination;
                 console.log(`Clicked destination: ${destinationName}`);
-
+    
                 // First, remove any existing info panels
                 this.removeExistingInfoPanels();
                 
                 const destination = this.destinations.find(d => d.name === destinationName);
-
+    
                 if (destination && destination.location) {
                     try {
                         items.forEach(i => i.classList.remove('active'));
@@ -210,6 +216,59 @@ const NavigationController = {
                 }
             });
         });
+    
+        // Add Seven Wonders button listener
+        console.log('Setting up Seven Wonders button listener');
+        const sevenWondersBtn = document.getElementById('sevenWondersBtn');
+        if (sevenWondersBtn) {
+            sevenWondersBtn.addEventListener('click', async () => {
+                console.log('Seven Wonders button clicked - Starting journey');
+                try {
+                    // First, remove any existing info panels
+                    this.removeExistingInfoPanels();
+                    const navigationPanel = document.querySelector('.navigation-panel');
+                    if (navigationPanel) {
+                        navigationPanel.classList.remove('active'); // This will hide the right panel
+                    }
+                    // Remove active state from other destinations
+                    items.forEach(i => i.classList.remove('active'));
+    
+                    if (window.NarrationSystem) {
+                        await window.NarrationSystem.show(
+                            "Get ready for an incredible journey to the Seven Wonders of the World! 🌎✨",
+                            "",
+                            4000
+                        );
+                    }
+                    
+                    // Ensure map is initialized
+                    if (!window.BABY_APP.mapInstance) {
+                        await loadGoogleMapsAPI();
+                        await initMap();
+                    }
+            
+                    if (!MapController.map) {
+                        await MapController.init(window.BABY_APP.mapInstance);
+                    }
+                    
+                    // Move to Seven Wonders initial location
+                    console.log('Moving to Seven Wonders initial location');
+                    await MapController.moveToLocation(LOCATIONS.SEVEN_WONDERS);
+                    
+                    // Show destination info
+                    console.log('Showing Seven Wonders destination info');
+                    this.showDestinationInfo({
+                        marketingContent: LOCATIONS.SEVEN_WONDERS.marketingContent
+                    });
+                    
+                } catch (error) {
+                    console.error('Error starting Seven Wonders journey:', error);
+                    alert('Sorry, we encountered an error starting the Seven Wonders journey. Please try again.');
+                }
+            });
+        } else {
+            console.warn('Seven Wonders button not found in DOM');
+        }
     },
 
     removeExistingInfoPanels: function() {

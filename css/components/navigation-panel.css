@@ -343,3 +343,37 @@
 .destination-info-panel.minimized .toggle-minimize::before {
     transform: rotate(180deg);  /* Rotate the triangle when minimized */
 }
+
+.action-buttons {
+    padding: 15px;
+    margin-top: 20px;  
+    border-top: 1px solid #eee;
+}
+
+.special-action-btn {
+    width: 100%;
+    background: linear-gradient(45deg, #4285f4, #34a853);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;  /* Add this to prevent wrapping */
+    font-size: 14px;      /* Slightly smaller font size */
+    padding: 12px 20px;   /* Adjusted padding */
+}
+
+.special-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(45deg, #357abd, #2d8f47);
+}
+
+.special-action-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}

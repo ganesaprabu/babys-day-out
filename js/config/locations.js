@@ -241,13 +241,71 @@ const LOCATIONS = {
             { lat: 37.7916, lng: -122.4056 },
             { lat: 37.7916, lng: -122.4099 }
         ]
-    }
+    },
+    SEVEN_WONDERS: {
+        name: "Seven Wonders of the World",
+        center: {
+            lat: 27.175015,  // Taj Mahal as initial center
+            lng: 78.042155,
+            altitude: 100
+        },
+        camera: {
+            tilt: 60,
+            heading: 45,
+            range: 800
+        },
+        marketingContent: {
+            title: "Seven Wonders of the World",
+            subtitle: "Embark on a Global Journey of Wonder",
+            description: "Join Mappy on an extraordinary adventure visiting the most breathtaking monuments of human achievement!",
+            features: [
+                "Visit the Great Wall of China",
+                "Explore the ancient city of Petra",
+                "Marvel at Christ the Redeemer",
+                "Discover Machu Picchu",
+                "Experience Chichen Itza",
+                "Tour the Colosseum",
+                "Admire the Taj Mahal"
+            ],
+            promoMessage: "Special worldwide tour starting now!",
+            callToAction: "Begin World Tour"
+        },
+        wonders: [
+            {
+                name: "Taj Mahal",
+                location: {
+                    lat: 27.175015,
+                    lng: 78.042155,
+                    altitude: 100
+                },
+                camera: {
+                    tilt: 60,
+                    heading: 45,
+                    range: 500
+                }
+            },
+            {
+                name: "Great Wall of China",
+                location: {
+                    lat: 40.4319,
+                    lng: 116.5704,
+                    altitude: 100
+                },
+                camera: {
+                    tilt: 65,
+                    heading: 30,
+                    range: 1000
+                }
+            }
+            // Other wonders will be added similarly
+        ]
+    },
 
 };
 
 // Update location categories
 const LOCATION_CATEGORIES = {
-    LANDMARKS: ['GOLDEN_GATE_BRIDGE'],
+    LANDMARKS: ['GOLDEN_GATE_BRIDGE', 'SEVEN_WONDERS'],
     MUSEUMS: ['EXPLORATORIUM'],
     SHOPPING: [],
     PARKS: [],
