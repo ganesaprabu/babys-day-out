@@ -383,3 +383,29 @@ gmp-map-3d {
     line-height: 1.5;
     color: #333;
 }
+
+/* Update in css/main.css */
+.globe-message {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    font-style: italic;
+    text-align: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 1s ease;
+    pointer-events: none;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    white-space: nowrap; /* Prevent text wrapping */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.globe-message.visible {
+    opacity: 1;
+}
