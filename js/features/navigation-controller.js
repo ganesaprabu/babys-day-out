@@ -1,4 +1,4 @@
-// js/features/navigation-controller.js
+
 const NavigationController = {
     getControllerIfAvailable: function(controllerName) {
         return window[controllerName] || null;
@@ -45,7 +45,7 @@ const NavigationController = {
         {
             name: "Taj Mahal",
             location: LOCATIONS.SEVEN_WONDERS.wonders.find(w => w.name === "Taj Mahal").location,
-            controller: null,  // Will be set dynamically when needed
+            controller: null,  
             controllerName: 'TajMahalController'
         },
         {
@@ -60,7 +60,7 @@ const NavigationController = {
                     range: 1000
                 }
             },
-            controller: null,  // Will be set dynamically when needed
+            controller: null,  
             controllerName: 'ChristRedeemerController'
         },
         {
@@ -75,7 +75,7 @@ const NavigationController = {
                     range: 800
                 }
             },
-            controller: null,  // Will be set dynamically when needed
+            controller: null,  
             controllerName: 'ColosseumController'
         },
         {
@@ -120,7 +120,7 @@ const NavigationController = {
     ],
     currentWonderIndex: 0,
 
-    // js/features/navigation-controller.js
+    
 
     init: function() {
         console.log('NavigationController init called');
@@ -238,7 +238,7 @@ const NavigationController = {
         `;
     },
 
-    // Update the attachEventListeners method in NavigationController
+    
 
     attachEventListeners: function() {
         console.log('Attaching navigation event listeners');
@@ -411,7 +411,7 @@ const NavigationController = {
     },
 
     showDestinationInfo: function(destination) {
-        // Previous code remains the same until the event handlers...
+        
     
         // Remove any existing panels first
         this.removeExistingInfoPanels();

@@ -1,4 +1,4 @@
-// js/features/FishermansWharfController.js
+
 class FishermansWharfController {
     constructor(map) {
         console.log("Initializing Fisherman's Wharf Controller");
@@ -61,7 +61,7 @@ class FishermansWharfController {
         }
     }
 
-    // In js/features/FishermansWharfController.js
+    
 
     async createSeaLionArea() {
         console.log("Creating sea lion viewing area");
@@ -81,7 +81,7 @@ class FishermansWharfController {
             // Set coordinates last
             polygon.outerCoordinates = this.location.pier39.seaLionArea.coordinates.map(coord => ({
                 ...coord,
-                altitude: 5 // Add some height for visibility
+                altitude: 5 
             }));
 
             this.map.append(polygon);

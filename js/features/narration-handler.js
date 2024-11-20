@@ -1,4 +1,4 @@
-// js/features/narration-handler.js
+
 
 const NarrationSystem = {
     currentBubble: null,

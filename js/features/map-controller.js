@@ -1,4 +1,4 @@
-// js/features/map-controller.js
+
 const MapController = {
     map: null,
     initialized: false,
@@ -558,7 +558,7 @@ const MapController = {
     },
 
 
-    // File: js/features/map-controller.js
+    
 
     async exploreExterior() {
         console.log('Starting exterior exploration sequence with extreme aerial view');
@@ -567,20 +567,7 @@ const MapController = {
             // Initialize glass wall effect
             await this.createGlassWallEffect();
 
-            // Extreme aerial view
-            /*await this.map.flyCameraTo({
-                endCamera: {
-                    center: { 
-                        lat: 37.8019,
-                        lng: -122.3975,
-                        altitude: 1000,    // Dramatically increased
-                        range: 15000      // Extremely large range for proper aerial view
-                    },
-                    tilt: 35,            // Much lower tilt for better aerial perspective
-                    heading: 85,
-                },
-                durationMillis: 3000
-            });*/
+            
 
             console.log('Camera positioned at extreme aerial view', {
                 range: 15000,
@@ -588,7 +575,7 @@ const MapController = {
                 altitude: 1000
             });
 
-            //await this.highlightWaterfront();
+            
             return true;
         } catch (error) {
             console.error('Error in exterior exploration:', error);

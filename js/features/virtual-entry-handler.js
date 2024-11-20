@@ -1,4 +1,4 @@
-// js/features/virtual-entry-handler.js
+
 
 const VirtualEntryHandler = {
     animatedElements: {
@@ -6,7 +6,7 @@ const VirtualEntryHandler = {
         glassWalls: null
     },
 
-    // Add the easing function at the top level of the object
+    
     easeInOutQuad(t) {
         return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     },

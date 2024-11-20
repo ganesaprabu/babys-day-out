@@ -1,4 +1,4 @@
-// js/features/TajMahalController.js
+
 
 class TajMahalController {
     constructor(map) {
@@ -74,7 +74,7 @@ class TajMahalController {
         }
     }
 
-    // In TajMahalController.js
+    
     async moveCamera(endCamera, duration) {
         console.log("Moving camera to:", endCamera);
         try {
