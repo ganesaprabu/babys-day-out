@@ -14,7 +14,11 @@ cd babys-day-out
 ```
 
 2. Configure Google Maps API:
-- Navigate to `js/config/config.js`
+- Create config.js from the template:
+```bash
+cp js/config/config.template.js js/config/config.js
+```
+- Open the new `js/config/config.js`
 - Replace `YOUR_GOOGLE_MAPS_API_KEY` with your actual API key:
 ```javascript
 GOOGLE_MAPS: {
